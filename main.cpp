@@ -1,23 +1,52 @@
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
-#include "moleculas.h"
+#include <vector>
+#include <algorithm>
+#include "molecula.h"
 
 using namespace std;
 
 int main()
 {
-	int N_moleculas = 1;
-	int N_atomos = 7;
-	int dim_caixa = 1;
+  int N_moleculas = 3;
+  int N_atomos = 10;
+  int dim_caixa = 10;
+  
+  double f_value;
+  
+  /*molecula* mol = new molecula(N_atomos, dim_caixa);
+  
+  f_value = mol -> Potencial();
 
-	double f_value;
+  cout << f_value << endl;
+  */
 
-	molecula* mol = new molecula(N_atomos, dim_caixa);
+  vector<molecula*> pop;
+  
+  for(int i=0; i<N_moleculas; ++i)
+    pop.push_back(new molecula(N_atomos, dim_caixa));
 
-	f_value = mol -> lennard_jones_potential();
+  
+  for(int i=0; i<N_moleculas; ++i)
+    pop[i]->Potencial();
 
-	mol -> ~molecula();
+  for(int i=0; i<N_moleculas; ++i)
+    cout << pop[i]->Get_Fvalue() << endl;
+  
+  sort(pop.begin(), pop.end(), greater<molecula*>());
 
-	return 0;
+  cout << "====== Sorting Done ======" << endl;
+
+  for(int i=0; i<N_moleculas; ++i)
+    cout << pop[i]->Get_Fvalue() << endl;
+  
+  
+  /*
+  gRandom = new TRandom3(0);
+  double x = gRandom->Uniform(-1.,1.);
+  cout << x << endl;
+  */
+  
+  return 0;
 }
