@@ -22,6 +22,7 @@ public:
   int Get_Natomos() {return N_atomos;}
   int Get_Dim() {return Dim_caixa;}
   
+  
   //Comparator
   static bool LessPot(molecula* mol1, molecula* mol2) {return mol1->Potencial() < mol2->Potencial();}
 
@@ -34,7 +35,7 @@ private:
   int Dim_caixa;
 
   double **posicoes;
-  //double f_value;
+  double f_value;
   //vector< pair < int, float> > f_value; 
 };
 
