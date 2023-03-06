@@ -18,6 +18,29 @@ molecula::molecula(int n_atomos, int dim_caixa) : N_atomos(n_atomos), Dim_caixa(
   }
 }
 
+molecula::molecula(molecula* mom, molecula* dad, double gene_prop, int n_atomos): N_atomos(n_atomos) {
+  double **pos_mom = mom->Get_Pos();
+  double **pos_dad = dad->Get_Pos();
+
+  for (int i = 0; i < N_atomos; i++){
+    for (int j = 0; j < 3; j++){
+      posicoes[i][j] = gene_prop * pos_mom[i][j] + (1 - gene_prop)* pos_dad[i][j];
+      }
+    }
+}
+
+void molecula::Mating(molecula* mom, molecula* dad, double gene_prop){
+  double **pos_mom = mom->Get_Pos();
+  double **pos_dad = dad->Get_Pos();
+
+  for (int i = 0; i < N_atomos; i++){
+    for (int j = 0; j < 3; j++){
+      posicoes[i][j] = gene_prop * pos_mom[i][j] + (1 - gene_prop)* pos_dad[i][j];
+      }
+    }
+}
+
+
 
 molecula::~molecula() {
     //apagar posicoes
@@ -34,7 +57,7 @@ double molecula::Potencial(){
   
   float d_aux = 0;
 
-  double f_value = 0.;
+  f_value = 0.;
   
   //nao sei se esta certo, confirmar com os outros
   for (int j = 0; j < N_atomos; j++){
@@ -42,11 +65,10 @@ double molecula::Potencial(){
     for (int k = 0; k < N_atomos; k++){
 
       if( j < k ){
-	
-	d_aux = sqrt( pow((posicoes[j][0] - posicoes[k][0]), 2) + pow((posicoes[j][1] -posicoes[k][1]), 2) + pow((posicoes[j][2] - posicoes[k][2]), 2));
-	
-	f_value += 4*epsilon*(pow((sigma/d_aux), 12) - pow((sigma/d_aux), 6));		
-      }else{ d_aux = 0;}
+        d_aux = sqrt( pow((posicoes[j][0] - posicoes[k][0]), 2) + pow((posicoes[j][1] -posicoes[k][1]), 2) + pow((posicoes[j][2] - posicoes[k][2]), 2));
+
+        f_value += 4*epsilon*(pow((sigma/d_aux), 12) - pow((sigma/d_aux), 6));		
+      }
     }
   }
   
@@ -75,7 +97,6 @@ double molecula::OtherPotential(){
   
   return f;
 }
-
 
 
 
