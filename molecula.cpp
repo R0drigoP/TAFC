@@ -2,7 +2,7 @@
 
 //Constructors and Destructor
 
-molecula::molecula(int n_atomos, int dim_caixa) : N_atomos(n_atomos), Dim_caixa(dim_caixa){
+molecula::molecula(int n_atomos, int dim_caixa, double mutation_rate) : N_atomos(n_atomos), Dim_caixa(dim_caixa), mute_rate(mutation_rate), f_value(0.) {
   posicoes = new double*[n_atomos];
   
   for (int i = 0; i < n_atomos; i++) {
@@ -18,6 +18,10 @@ molecula::molecula(int n_atomos, int dim_caixa) : N_atomos(n_atomos), Dim_caixa(
   }
 }
 
+molecula::molecula(const molecula& mol) :
+  molecula(mol.N_atomos, mol.Dim_caixa, mol.mute_rate) {;}
+
+//Neste aqui é preciso passar nmr de atomos como argumento? Não se pode só usar um getter?
 molecula::molecula(molecula* mom, molecula* dad, double gene_prop, int n_atomos): N_atomos(n_atomos) {
   double **pos_mom = mom->Get_Pos();
   double **pos_dad = dad->Get_Pos();
@@ -49,6 +53,13 @@ molecula::~molecula() {
     delete[] posicoes;
 }
 
+//Operators
+void molecula::operator=(const molecula& mol){
+  for(int i=0; i<N_atomos; ++i){
+    for(int j=0; j<3; ++j)
+      mol.posicoes[i][j] = posicoes[i][j];
+  }
+}
 
 //calcula o lennard_jones para cada molecula
 double molecula::Potencial(){
@@ -99,7 +110,20 @@ double molecula::OtherPotential(){
 }
 
 
-
+void molecula::Mutate(){
+  gRandom = new TRandom3(0);
+  if(gRandom->Uniform() < mute_rate){
+    for(int i=0; i<N_atomos; ++i){
+      for(int j=0; j<3; ++j){
+	double mutation = gRandom->Uniform(-1,1)/Dim_caixa;
+	posicoes[i][j] += mutation;
+	//Se a mutaçao fizer o atomo sair da caixa, fazer mesma mutação mas no sentido contrário
+	if(posicoes[i][j] > Dim_caixa)
+	  posicoes[i][j] -= 2*mutation;
+      }
+    }
+  }
+}
 
 
 
