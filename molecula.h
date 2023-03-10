@@ -40,6 +40,7 @@ public:
   void Mating(molecula* mom, molecula* dad, double gene_prop=0);
   void Mutate();
 
+  void Mutate_1Atom();
 private:
   int N_atomos;
   int Dim_caixa;

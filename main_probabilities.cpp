@@ -6,12 +6,12 @@
 
 using namespace std;
 
-int main()
-{
+int main(){
   int N_moleculas = 10;
   int N_atomos = 10;
   int dim_caixa = 10;
   double survival_rate = 0.4;
+  double mutation_prob = 0.1;
   
   //Inicializar população como vector de ponteiros de objetos
   vector<molecula*> pop;
@@ -50,15 +50,21 @@ int main()
 
   int *parent_order = new int[couples_nb*2];
 
+<<<<<<< HEAD
   for(int iter = 0; iter < 1000; iter++){
+=======
+  for(int iter = 0; iter < 100; iter++){
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
 
-    //cout<<"ITER "<<iter<<endl;
+    for(int i = 0; i < N_moleculas; ++i)
+      pop[i]->Potencial();
 
-      for(int i = 0; i < N_moleculas; ++i)
-        pop[i]->Potencial();
+    sort(pop.begin(), pop.end(), molecula::LessPot);
+    gr -> AddPoint( iter, pop[0] -> Get_Pot());
+    cout << "|| " << pop[0] -> Get_Pot() << endl;
 
-      sort(pop.begin(), pop.end(), molecula::LessPot);
 
+<<<<<<< HEAD
       gr -> AddPoint( iter, pop[0] -> Get_Pot());
       //cout << "|| " << pop[0] -> Get_Pot() << endl;
 
@@ -79,13 +85,27 @@ int main()
       // is_parent[i] == 1 : True: Molecule i is not a parent
       for(int i = 0; i < N_moleculas; i++) 
       	is_parent[i] = 0;
+=======
+    //imprimir
+    /*if(iter == 0 || iter == (10-1) ){*/
+    //cout << "ITER " << iter << endl;
+    //for(int i = 0; i < N_moleculas; ++i)
+    //  cout << pop[i] -> Get_Pot() << endl;
 
+    //calculate probability for each molecule to be a parent
+    double Emax = pop[N_moleculas-1] -> Get_Pot();
+    double Emin = pop[0] -> Get_Pot();
+
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
+
+    // is_parent[i] == 0 : False: Molecule i is not a parent
+    // is_parent[i] == 1 : True: Molecule i is not a parent
+    for(int i = 0; i < N_moleculas; i++){ 
+      is_parent[i] = 0;
+      soma_prob_new[i] = 0;
+    }
       soma_prob = 0;
       soma_prob_aux = 0;
-
-      for(int i = 0; i < N_moleculas; i++){
-      	soma_prob_new[i] = 0;
-      }
 
       for(int i = 0; i < N_moleculas; i++){
       	//biblio: A Genetic Algorithm for Lennard-Jones Atomic Clusters C. BARR6N
@@ -99,7 +119,12 @@ int main()
 
       	prob[i] = prob[i]/soma_prob;
 
+<<<<<<< HEAD
       	//cout << "Probabilidade molecula " << i << " : " << prob[i] << endl;
+=======
+      	if (i==0)
+          cout << "Probabilidade molecula " << i << " : " << prob[i] << endl;
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
 
       	soma_prob_new[i] += soma_prob_aux; 
 
@@ -120,6 +145,7 @@ int main()
 
 	  		if( soma_prob_new[i] < r && r < prob[i] + soma_prob_new[i] && is_parent[i] == 0){
 
+<<<<<<< HEAD
 	  			//cout << "[" << soma_prob_new[i] << ", "<< prob[i] + soma_prob_new[i] << "]" << endl;
 
 	  			//cout << "random nr: " << r << "molecule nr: " << i << endl;
@@ -131,25 +157,62 @@ int main()
 				parent += 1;
 
 			}
+=======
+          cout << "[" << soma_prob_new[i] << ", "<< prob[i] + soma_prob_new[i] << "]" << endl;
+          cout << "random nr: " << r << "molecule nr: " << i << endl;
+          //molecula i é parent 
+          is_parent[i] = 1;
+          parent_order[parent] = i;
+          parent += 1;
+          
+        }
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
   		}
   	}
 
+    //cout<<"-----------CRIAR FILHOS"<<endl;
 
     for(int i = 0; i < couples_nb; i++){
+      for (int j = 0; j < children_per_couple; j++){
 
-        for (int j = 0; j < children_per_couple; j++){
+<<<<<<< HEAD
+    for(int i = 0; i < couples_nb; i++){
+=======
+        double gene_prop = 1./(j+2);
+        //cout<<"Vou morrer?"<< i << " "<<j<<endl;
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
 
-          double gene_prop = 1./(j+2);
+        //cout<<"try: "<<2*i<<"  "<< parent_order[2*i]<<endl;
+        //pop[ parent_order[2*i]] ->Get_Pot();
 
-          pop[parents_nb + i*children_per_couple + j] -> Mating(pop[ parent_order[2*i] ], pop[ parent_order[2*i + 1] ], gene_prop);
+        //cout<<"try: "<<2*i + 1<<"  "<< parent_order[2*i + 1]<<endl;
+        //pop[ parent_order[2*i + 1]] ->Get_Pot();
 
+
+<<<<<<< HEAD
           //cout << "Estou a morrer?" << i << j << endl;
+=======
+        pop[parents_nb + i*children_per_couple + j] -> Mating(pop[ parent_order[2*i] ], pop[ parent_order[2*i + 1] ], gene_prop);
+
+        //cout << "Não morri" << i << j << endl;
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
 
           //cout << parents_nb+i*children_per_couple+j << endl;//cout<<couples_nb*i<<" "<<couples_nb*i+1<<endl;
+
+        r = ((double) rand() / (RAND_MAX));
+        if ( r < mutation_prob){
+          pop[parents_nb + i*children_per_couple + j]->Mutate_1Atom();
+        }
         
         }
     }
+<<<<<<< HEAD
+=======
+    //cout<<"----------ACABEI DE CRIAR FILHOS"<<endl;  
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
   }
+
+
 
   delete[] prob;
   delete[] soma_prob_new;
@@ -162,7 +225,10 @@ int main()
   //gr->GetYaxis()->SetRangeUser(-1.,0.);
   gr -> Draw("AP");
   c1 -> SaveAs("evolution.pdf");
+<<<<<<< HEAD
+=======
 
-  cout << "ola" << endl;
+>>>>>>> 34c95c1214b129505597352844016cfeb08af5d7
+
   return 0;
 }

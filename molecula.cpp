@@ -115,27 +115,26 @@ void molecula::Mutate(){
   if(gRandom->Uniform() < mute_rate){
     for(int i=0; i<N_atomos; ++i){
       for(int j=0; j<3; ++j){
-	double mutation = gRandom->Uniform(-1,1)/Dim_caixa;
-	posicoes[i][j] += mutation;
-	//Se a mutaçao fizer o atomo sair da caixa, fazer mesma mutação mas no sentido contrário
-	if(posicoes[i][j] > Dim_caixa)
-	  posicoes[i][j] -= 2*mutation;
+        double mutation = gRandom->Uniform(-1,1)/Dim_caixa;
+        posicoes[i][j] += mutation;
+        //Se a mutaçao fizer o atomo sair da caixa, fazer mesma mutação mas no sentido contrário
+        if(posicoes[i][j] > Dim_caixa)
+          posicoes[i][j] -= 2*mutation;
       }
     }
   }
 }
 
+void molecula::Mutate_1Atom(){
+  gRandom = new TRandom3(0);
+  int atom_to_mutate = int(gRandom->Uniform(0,N_atomos));
+  double mutation = gRandom->Uniform(-1,1)/Dim_caixa;
 
+  for(int j=0; j<3; ++j){
+    posicoes[atom_to_mutate][j] += mutation;
+    if(posicoes[atom_to_mutate][j] > Dim_caixa)
+      posicoes[atom_to_mutate][j] -= 2*mutation;
 
-
-
-
-
-
-
-
-
-
-
-
+  }
+}
 
