@@ -30,6 +30,7 @@ int main()
   int children_nb = N_moleculas - parents_nb;
   //temos de ver como vamos distribuir as children por casal
   int children_per_couple = children_nb / couples_nb;
+  cout << children_per_couple << endl;
 
 
   TCanvas *c1 = new TCanvas();
@@ -38,7 +39,7 @@ int main()
   double *prob = new double[N_moleculas];
   double soma_prob, soma_prob_aux;
   double *soma_prob_new = new double[N_moleculas];
-  bool *is_parent = new bool[N_moleculas];
+  bool *is_parent = new bool[couples_nb*2];
   double r, s;
 
   srand((unsigned int)time(NULL));
@@ -49,7 +50,7 @@ int main()
 
   int *parent_order = new int[couples_nb*2];
 
-  for(int iter = 0; iter < 10; iter++){
+  for(int iter = 0; iter < 1000; iter++){
 
     //cout<<"ITER "<<iter<<endl;
 
@@ -59,15 +60,15 @@ int main()
       sort(pop.begin(), pop.end(), molecula::LessPot);
 
       gr -> AddPoint( iter, pop[0] -> Get_Pot());
-      cout << "|| " << pop[0] -> Get_Pot() << endl;
+      //cout << "|| " << pop[0] -> Get_Pot() << endl;
 
       //imprimir
-      /*if(iter == 0 || iter == (10-1) ){*/
-      cout << "ITER " << iter << endl;
+      if(iter == 0 || iter == (10-1) ){
+      	cout << "ITER " << iter << endl;
 
-      for(int i = 0; i < N_moleculas; ++i)
-        cout << pop[i] -> Get_Pot() << endl;
-      //}
+	    for(int i = 0; i < N_moleculas; ++i)
+	       cout << pop[i] -> Get_Pot() << endl;
+      }
 
       //calculate probability for each molecule to be a parent
       double Emax = pop[N_moleculas-1] -> Get_Pot();
@@ -89,7 +90,7 @@ int main()
       for(int i = 0; i < N_moleculas; i++){
       	//biblio: A Genetic Algorithm for Lennard-Jones Atomic Clusters C. BARR6N
       	//prob[i] = 1 + N_moleculas*pow(((Emax - pop[i] -> Get_Pot())/(Emax - Emin)),2);
-      	prob[i] =  exp(-(pop[i] -> Get_Pot()));
+      	prob[i] =  exp(-(pop[i]->Get_Pot()));
 
       	soma_prob += prob[i]; 
       }
@@ -98,13 +99,13 @@ int main()
 
       	prob[i] = prob[i]/soma_prob;
 
-      	cout << "Probabilidade molecula " << i << " : " << prob[i] << endl;
+      	//cout << "Probabilidade molecula " << i << " : " << prob[i] << endl;
 
       	soma_prob_new[i] += soma_prob_aux; 
 
       	soma_prob_aux += prob[i];
 
-      	cout << "Soma prob:" << soma_prob_new[i] << endl;
+      	//cout << "Soma prob:" << soma_prob_new[i] << endl;
       	
       }
 
@@ -119,21 +120,22 @@ int main()
 
 	  		if( soma_prob_new[i] < r && r < prob[i] + soma_prob_new[i] && is_parent[i] == 0){
 
-	  			cout << "[" << soma_prob_new[i] << ", "<< prob[i] + soma_prob_new[i] << "]" << endl;
+	  			//cout << "[" << soma_prob_new[i] << ", "<< prob[i] + soma_prob_new[i] << "]" << endl;
 
-	  			cout << "random nr: " << r << "molecule nr: " << i << endl;
+	  			//cout << "random nr: " << r << "molecule nr: " << i << endl;
 				//molecula i é parent 
 				is_parent[i] = 1;
 
+				parent_order[parent] = i;
+
 				parent += 1;
 
-				parent_order[parent] = i;
 			}
   		}
   	}
 
 
-    /*for(int i = 0; i < couples_nb; i++){
+    for(int i = 0; i < couples_nb; i++){
 
         for (int j = 0; j < children_per_couple; j++){
 
@@ -141,12 +143,12 @@ int main()
 
           pop[parents_nb + i*children_per_couple + j] -> Mating(pop[ parent_order[2*i] ], pop[ parent_order[2*i + 1] ], gene_prop);
 
-          cout << "Estou a morrer?" << i << j << endl;
+          //cout << "Estou a morrer?" << i << j << endl;
 
           //cout << parents_nb+i*children_per_couple+j << endl;//cout<<couples_nb*i<<" "<<couples_nb*i+1<<endl;
         
         }
-    }*/  
+    }
   }
 
   delete[] prob;
@@ -156,10 +158,10 @@ int main()
 
   pop.clear();
 
-  /*c1 -> cd();
+  c1 -> cd();
   //gr->GetYaxis()->SetRangeUser(-1.,0.);
   gr -> Draw("AP");
-  c1 -> SaveAs("evolution.pdf");*/
+  c1 -> SaveAs("evolution.pdf");
 
   cout << "ola" << endl;
   return 0;
