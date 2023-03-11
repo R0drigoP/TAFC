@@ -27,7 +27,7 @@ public:
   double Get_Pot() {return f_value;}
 
   //Setters
-  void Set_Pos(double** pos) {posicoes = pos;}
+  void Set_Pos(double** pos);
   
   //Comparator
   static bool LessPot(molecula* mol1, molecula* mol2) {return mol1->Get_Pot() < mol2->Get_Pot();}
@@ -35,7 +35,7 @@ public:
 
   //Calculations
   double Potencial();
-  double OtherPotential();
+  void OtherPotential();
 
   void Mating(molecula* mom, molecula* dad, double gene_prop=0);
   void Mating_Plano(molecula* mom, molecula* dad, double gene_prop=0);

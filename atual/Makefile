@@ -12,6 +12,9 @@ EXECUTABLE = main
 
 all: $(SOURCES) $(EXECUTABLE)
 
+rodri: 
+	$(CC) main.cpp mating_func.cpp molecula.cpp `root-config --cflags --glibs` -o main
+
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
