@@ -49,7 +49,7 @@ int main(){
 
   int *parent_order = new int[couples_nb*2];
 
-  for(int iter = 0; iter < 100; iter++){
+  for(int iter = 0; iter < 10000; iter++){
 
     for(int i = 0; i < N_moleculas; ++i)
       pop[i]->Potencial();

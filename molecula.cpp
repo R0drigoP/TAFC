@@ -110,20 +110,20 @@ double molecula::OtherPotential(){
 }
 
 
-void molecula::Mutate(){
+/*void Molecule::Mutate(){
   gRandom = new TRandom3(0);
-  if(gRandom->Uniform() < mute_rate){
-    for(int i=0; i<N_atomos; ++i){
-      for(int j=0; j<3; ++j){
-        double mutation = gRandom->Uniform(-1,1)/Dim_caixa;
-        posicoes[i][j] += mutation;
-        //Se a mutaçao fizer o atomo sair da caixa, fazer mesma mutação mas no sentido contrário
-        if(posicoes[i][j] > Dim_caixa)
-          posicoes[i][j] -= 2*mutation;
-      }
+  double check_if_mute = gRandom->Uniform(0,1);
+
+  if(check_if_mute < mutation_rate){
+    int atom_to_mutate = (int)gRandom->Uniform(0, N_atoms);
+    for(int i=0; i<3; ++i){
+      double mutation = gRandom->Uniform(-1,1)*0.01*L_box;
+      positions[atom_to_mutate][i] += mutation;
+      if(positions[atom_to_mutate][i] > L_box)
+  positions[atom_to_mutate][i] -= 2*mutation;
     }
   }
-}
+}*/
 
 void molecula::Mutate_1Atom(){
   gRandom = new TRandom3(0);
