@@ -128,7 +128,7 @@ void molecula::Mutate(){
 void molecula::Mutate_1Atom(){
   gRandom = new TRandom3(0);
   int atom_to_mutate = int(gRandom->Uniform(0,N_atomos));
-  double mutation = gRandom->Uniform(-1,1)/Dim_caixa;
+  double mutation = gRandom -> Uniform(-1,1)*Dim_caixa/100;
 
   for(int j=0; j<3; ++j){
     posicoes[atom_to_mutate][j] += mutation;

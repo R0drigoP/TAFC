@@ -38,6 +38,7 @@ public:
   double OtherPotential();
 
   void Mating(molecula* mom, molecula* dad, double gene_prop=0);
+  void Mating_Plano(molecula* mom, molecula* dad, double gene_prop=0);
   void Mutate();
 
   void Mutate_1Atom();
