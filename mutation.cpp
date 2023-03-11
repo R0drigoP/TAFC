@@ -11,12 +11,12 @@ using namespace std;
 
 int main()
 {
-  int N_moleculas = 7;
-  int N_atomos = 13;
-  int dim_caixa = 4;
-  int N_gen = 10;
-  double mutation_rate = 0.1; //5%
-  double survival_rate = 0.3; //40%
+  int N_moleculas = 30;
+  int N_atomos = 5;
+  int dim_caixa = 10;
+  int N_gen = 5000;
+  double mutation_rate = 0.01; //1%
+  double survival_rate = 0.3; //30%
 
   vector<double> Pot_t(N_gen); //Potencial over generations
   
@@ -33,13 +33,14 @@ int main()
   for(int gen=0; gen<N_gen; ++gen){
     sort(pop.begin(), pop.end(), molecula::LessPot);
 
-    
-    cout << "\nGeneration number" << gen + 1 << endl;
+      
+    /*cout << "\nGeneration number" << gen + 1 << endl;
     //cout << pop[0]->Get_Pot() << endl;
     
     for(int mol=0; mol<N_moleculas; ++mol)
       cout << pop[mol]->Get_Pot() << " ||  " << flush;
-
+    */
+    
     Pot_t[gen] = pop[0]->Get_Pot();
 
     //Nova gen formada
@@ -50,7 +51,7 @@ int main()
 
     //Introduzir mutação
     for(int mol=0; mol<N_moleculas; ++mol){
-      pop[mol]->Mutate();
+      pop[mol]->Mutate_1Atom();
       pop[mol]->Potencial();
     }
   }
@@ -62,11 +63,12 @@ int main()
     gr->AddPoint(gen+1,Pot_t[gen]);
     //cout << Pot_t[gen] << endl;
   }
-
+  
   gr->Draw("AP");
   c1->SaveAs("mutation.pdf");
+
   //Fazer o clear das cenas
-    
+  pop.clear();
 
   return 0;
 }

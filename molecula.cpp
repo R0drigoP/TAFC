@@ -25,23 +25,23 @@ molecula::molecula(const molecula& mol) :
 molecula::molecula(molecula* mom, molecula* dad, double gene_prop, int n_atomos): N_atomos(n_atomos) {
   double **pos_mom = mom->Get_Pos();
   double **pos_dad = dad->Get_Pos();
-
+  
   for (int i = 0; i < N_atomos; i++){
     for (int j = 0; j < 3; j++){
       posicoes[i][j] = gene_prop * pos_mom[i][j] + (1 - gene_prop)* pos_dad[i][j];
-      }
     }
+  }
 }
 
 void molecula::Mating(molecula* mom, molecula* dad, double gene_prop){
   double **pos_mom = mom->Get_Pos();
   double **pos_dad = dad->Get_Pos();
-
+  
   for (int i = 0; i < N_atomos; i++){
     for (int j = 0; j < 3; j++){
       posicoes[i][j] = gene_prop * pos_mom[i][j] + (1 - gene_prop)* pos_dad[i][j];
-      }
     }
+  }
 }
 
 
@@ -57,7 +57,7 @@ molecula::~molecula() {
 void molecula::operator=(const molecula& mol){
   for(int i=0; i<N_atomos; ++i){
     for(int j=0; j<3; ++j)
-      mol.posicoes[i][j] = posicoes[i][j];
+      posicoes[i][j] = mol.posicoes[i][j];
   }
 }
 
@@ -128,13 +128,13 @@ void molecula::Mutate(){
 void molecula::Mutate_1Atom(){
   gRandom = new TRandom3(0);
   int atom_to_mutate = int(gRandom->Uniform(0,N_atomos));
-  double mutation = gRandom->Uniform(-1,1)/Dim_caixa;
-
+  
   for(int j=0; j<3; ++j){
+    double mutation = gRandom->Uniform(-1,1)*0.01*Dim_caixa;
     posicoes[atom_to_mutate][j] += mutation;
     if(posicoes[atom_to_mutate][j] > Dim_caixa)
       posicoes[atom_to_mutate][j] -= 2*mutation;
-
+    
   }
 }
 
