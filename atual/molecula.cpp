@@ -44,11 +44,28 @@ void molecula::Mating(molecula* mom, molecula* dad, double gene_prop){
   }
 }
 
+void molecula::Mating_Plano(molecula* mom, molecula* dad, double gene_prop = 0){
+  //escolher parte dos atomos da mãe e parte dos átomos do pai
+  double **pos_mom = mom->Get_Pos();
+  double **pos_dad = dad->Get_Pos();
+
+  double pos_CM[N_atomos][3];
+
+  //posicao centro de massa 
+  for(int i = 0; i < N_atomos; i++)
+    for(int j = 0; j < 3; j++)
+      pos_CM[i][j] = pos_mom[i][j] + pos_dad[i][j];
+  
+  for()
+
+
+}
 
 
 molecula::~molecula() {
     //apagar posicoes
-    for(int i = 0; i < 3; ++i) { delete[] posicoes[i]; }
+    for(int i = 0; i < 3; ++i) 
+      delete[] posicoes[i];
     
     delete[] posicoes;
 }
