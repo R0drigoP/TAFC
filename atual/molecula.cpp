@@ -78,6 +78,16 @@ void molecula::operator=(const molecula& mol){
   }
 }
 
+//Setters
+
+void molecula::Set_Pos(double** new_pos){
+  for(int i=0; i<N_atomos; ++i){
+    for(int j=0; j<3; ++j)
+      posicoes[i][j] = new_pos[i][j];
+  }
+}
+
+
 //calcula o lennard_jones para cada molecula
 double molecula::Potencial(){
   float sigma = 1; //(Angstroms)
@@ -105,7 +115,7 @@ double molecula::Potencial(){
   return f_value;
 }
 
-double molecula::OtherPotential(){
+void molecula::OtherPotential(){
   float sigma = 1; //(Angstroms)
   float epsilon = 1; //(kJ/mol)
   double f = 0.;
@@ -115,7 +125,7 @@ double molecula::OtherPotential(){
       //Calculate radius
       double r = 0.;
       for(int k=0; k<3; ++k)
-  r += (posicoes[i][k] - posicoes[j][k])*(posicoes[i][k] - posicoes[j][k]);
+	r += (posicoes[i][k] - posicoes[j][k])*(posicoes[i][k] - posicoes[j][k]);
       r = sqrt(r);
 
       //Calculate Potential and sum to f_value
@@ -123,21 +133,21 @@ double molecula::OtherPotential(){
     }
   }
   
-  return f;
+  f_value = f;
 }
 
 
 void molecula::Mutate(){
   gRandom = new TRandom3(0);
   double check_if_mute = gRandom->Uniform(0,1);
-
+  
   if(check_if_mute < mute_rate){
     int atom_to_mutate = (int)gRandom->Uniform(0, N_atomos);
     for(int i=0; i<3; ++i){
       double mutation = gRandom->Uniform(-1,1)*0.01*Dim_caixa;
       posicoes[atom_to_mutate][i] += mutation;
       if(posicoes[atom_to_mutate][i] > Dim_caixa)
-  posicoes[atom_to_mutate][i] -= 2*mutation;
+	posicoes[atom_to_mutate][i] -= 2*mutation;
     }
   }
 }
