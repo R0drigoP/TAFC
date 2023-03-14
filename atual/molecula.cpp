@@ -44,21 +44,127 @@ void molecula::Mating(molecula* mom, molecula* dad, double gene_prop){
   }
 }
 
-void molecula::Mating_Plano(molecula* mom, molecula* dad, double gene_prop = 0){
+void molecula::Mating_Plano(molecula* mom, molecula* dad){
+
+  //cout << "Ola" << endl;
   //escolher parte dos atomos da mãe e parte dos átomos do pai
-  double **pos_mom = mom->Get_Pos();
-  double **pos_dad = dad->Get_Pos();
+  double **pos_mom = mom -> Get_Pos();
+  double **pos_dad = dad -> Get_Pos();
+  double pos_CM[3];
 
-  double pos_CM[N_atomos][3];
+  int flag = 0;
 
+  for(int i = 0; i < 3; i++)
+    pos_CM[i] = 0;
+  
   //posicao centro de massa 
   for(int i = 0; i < N_atomos; i++)
     for(int j = 0; j < 3; j++)
-      pos_CM[i][j] = pos_mom[i][j] + pos_dad[i][j];
+      pos_CM[j] += (pos_mom[i][j] + pos_dad[i][j])/2;
+
+  for(int i = 0; i < 3; i++)
+    pos_CM[i] = pos_CM[i]/N_atomos; 
+
+
+  cout << "Mom Atom 1 " <<  " : " <<pos_mom[0][0] << ", " << pos_mom[0][1] << ", " << pos_mom[0][2] << endl;
+  cout << "Mom Atom 2 " << " : " <<pos_mom[1][0] << ", " << pos_mom[1][1] << ", " << pos_mom[1][2] << endl;
+  cout << "Mom Atom 3 " << " : " <<pos_mom[2][0] << ", " << pos_mom[2][1] << ", " << pos_mom[2][2] << endl;
+
+  cout << "dad Atom 1 " <<  " : " <<pos_dad[0][0] << ", " << pos_dad[0][1] << ", " << pos_dad[0][2] << endl;
+  cout << "dad Atom 2 " << " : " <<pos_dad[1][0] << ", " << pos_dad[1][1] << ", " << pos_dad[1][2] << endl;
+  cout << "dad Atom 3 " <<  " : " <<pos_dad[2][0] << ", " << pos_dad[2][1] << ", " << pos_dad[2][2] << endl;
+
+  cout<<"z_cm "<<pos_CM[2]<<endl; 
   
-  for()
+  //cortar a caixa c/ plano c/ z cte.
+  //Molecula filha resulta dos atomos da mãe que se encontram acima do plano + atomos do pai a baixo do plano
+  int nr_atoms_mom = 0, nr_atoms_dad = 0, nr_atoms = 0;
 
+  while( nr_atoms < N_atomos ){
 
+    //cout << "Ola" << endl;
+
+    for (int i = 0; i < N_atomos; i++){
+
+      if(pos_mom[i][2] > pos_CM[2]){
+        for(int j = 0; j < 3; j++)
+          posicoes[nr_atoms][j] = pos_mom[i][j];
+
+        nr_atoms_mom ++;
+        nr_atoms ++;
+        //cout << "Nr total atomos filho: "<<nr_atoms << endl;
+        //cout << "Nr atomos filho (mae): "<<nr_atoms_mom << endl;
+      }
+
+      if(nr_atoms == N_atomos )
+        break;
+
+      if(pos_dad[i][2] < pos_CM[2]){
+        for(int j = 0; j < 3; j++)
+          posicoes[nr_atoms][j] = pos_dad[i][j];
+
+        nr_atoms_dad += 1;
+        nr_atoms += 1;
+        //cout << "Nr total atomos filho: "<< nr_atoms << endl;
+        //cout << "Nr atomos filho (pai): "<<nr_atoms_dad << endl;
+      }
+
+      if(nr_atoms == N_atomos )
+        break;
+    }
+
+    for (int i = 0; i < N_atomos; i++){
+      if(pos_mom[i][2] < pos_CM[2]){
+        for (int k = 0; k < nr_atoms; k++){
+          flag = 0;
+          for (int j = 0; j < 3; j++){
+            if (posicoes[k][j]==pos_mom[i][j])
+              flag++;
+          }
+          if(flag == 3)
+            break; 
+        }
+        if (flag != 3){
+          for(int j = 0; j < 3; j++)
+            posicoes[nr_atoms][j] = pos_mom[i][j];
+          nr_atoms_mom += 1;
+          nr_atoms += 1;
+          //cout << "Nr total atomos filho: "<<nr_atoms << endl;
+          //cout << "Nr atomos filho (mae): "<<nr_atoms_mom << endl;
+        }
+      }
+      if(nr_atoms == N_atomos)
+        break;
+
+      if(pos_dad[i][2] > pos_CM[2]){
+        for (int k = 0; k < nr_atoms; k++){
+          flag = 0;
+          for (int j = 0; j < 3; j++)
+            if (posicoes[k][j]==pos_dad[i][j])
+              flag++;
+
+            if(flag == 3)
+              break;
+          }
+          if (flag != 3){
+            for(int j = 0; j < 3; j++)
+              posicoes[nr_atoms][j] = pos_dad[i][j];
+            nr_atoms_dad += 1;
+            nr_atoms += 1;
+            //cout << "Nr total atomos filho: "<< nr_atoms << endl;
+            //cout << "Nr atomos filho (pai): "<<nr_atoms_dad << endl;
+          }
+        }
+        if(nr_atoms == N_atomos )
+          break;
+      }
+    }
+    cout<<"aaa"<<endl;
+
+    cout << "daughter Atom 1 " << " : " <<posicoes[0][0] << ", " << posicoes[0][1] << ", " << posicoes[0][2] << endl;
+    cout << "daughter Atom 2 " << " : " <<posicoes[1][0] << ", " << posicoes[1][1] << ", " << posicoes[1][2] << endl;
+    cout << "daughter Atom 3 " << " : " <<posicoes[2][0] << ", " << posicoes[2][1] << ", " << posicoes[2][2] << endl;
+    cout << "-------------"<<endl;
 }
 
 
@@ -147,7 +253,7 @@ void molecula::Mutate(){
       double mutation = gRandom->Uniform(-1,1)*0.01*Dim_caixa;
       posicoes[atom_to_mutate][i] += mutation;
       if(posicoes[atom_to_mutate][i] > Dim_caixa)
-	posicoes[atom_to_mutate][i] -= 2*mutation;
+        posicoes[atom_to_mutate][i] -= 2*mutation;
     }
   }
 }
@@ -164,3 +270,134 @@ void molecula::Mutate_1Atom(){
     
   }
 }
+//--------------------------------------------
+
+void molecula::Mating_Plano3(molecula* mom, molecula* dad){
+
+  double **pos_mom = mom -> Get_Pos();
+  double **pos_dad = dad -> Get_Pos();
+  double pos_CM = 0;
+
+  int flag = 0;
+  int nr_atoms = 0;
+
+  gRandom = new TRandom3(0);
+  int dir = (int)gRandom -> Uniform(0,3);
+
+  
+  //posicao centro de massa 
+  for(int i = 0; i < N_atomos; i++)
+    pos_CM += (pos_mom[i][dir] + pos_dad[i][dir])/2;
+  pos_CM = pos_CM/N_atomos; 
+
+  /*
+
+  cout << "Mom Atom 1 " <<  " : " <<pos_mom[0][0] << ", " << pos_mom[0][1] << ", " << pos_mom[0][2] << endl;
+  cout << "Mom Atom 2 " << " : " <<pos_mom[1][0] << ", " << pos_mom[1][1] << ", " << pos_mom[1][2] << endl;
+  cout << "Mom Atom 3 " << " : " <<pos_mom[2][0] << ", " << pos_mom[2][1] << ", " << pos_mom[2][2] << endl;
+
+  cout << "dad Atom 1 " <<  " : " <<pos_dad[0][0] << ", " << pos_dad[0][1] << ", " << pos_dad[0][2] << endl;
+  cout << "dad Atom 2 " << " : " <<pos_dad[1][0] << ", " << pos_dad[1][1] << ", " << pos_dad[1][2] << endl;
+  cout << "dad Atom 3 " <<  " : " <<pos_dad[2][0] << ", " << pos_dad[2][1] << ", " << pos_dad[2][2] << endl;
+
+  cout<<"z_cm "<<pos_CM[2]<<endl;*/
+
+
+  //choose every mom atom above CM
+  for (int i = 0; i < N_atomos; i++){
+
+
+    if(pos_mom[i][dir] > pos_CM){
+      for (int k = 0; k < nr_atoms; k++){
+        flag = 0;
+        for (int j = 0; j < 3; j++){
+          if (posicoes[k][j]==pos_mom[i][j])
+            flag++;
+        }
+        if(flag == 3)
+          break; 
+        }
+        if (flag != 3){
+          for(int j = 0; j < 3; j++)
+            posicoes[nr_atoms][j] = pos_mom[i][j];
+          nr_atoms ++;
+          //cout<<"mom  above"<<endl;
+        }
+    } 
+  }
+
+  //choose every dad atom bellow CM
+  for (int i = 0; i < N_atomos; i++){
+    if(nr_atoms== N_atomos)
+      break;
+    else if(pos_dad[i][dir] < pos_CM){
+      for(int j = 0; j < 3; j++)
+        posicoes[nr_atoms][j] = pos_dad[i][j];
+      nr_atoms ++;
+      //cout<<"dad bellow"<<endl;
+    }
+  }
+
+  if (nr_atoms < N_atomos){
+    //choose every mom atom below CM
+    for (int i = 0; i < N_atomos; i++){
+
+      if(pos_mom[i][dir] < pos_CM){
+        for (int k = 0; k < nr_atoms; k++){
+          flag = 0;
+          for (int j = 0; j < 3; j++){
+            if (posicoes[k][j]==pos_mom[i][j])
+              flag++;
+          }
+          if(flag == 3)
+            break; 
+        }
+        if (flag != 3){
+          for(int j = 0; j < 3; j++)
+            posicoes[nr_atoms][j] = pos_mom[i][j];
+          nr_atoms ++;
+          //cout<<"mom below"<<endl;
+        }
+      }
+      if(nr_atoms== N_atomos)
+        break;
+    }
+  }
+
+  if (nr_atoms < N_atomos){
+    //choose every dad atom above CM
+    for (int i = 0; i < N_atomos; i++){
+
+      if(pos_dad[i][dir] > pos_CM){
+        for (int k = 0; k < nr_atoms; k++){
+          flag = 0;
+          for (int j = 0; j < 3; j++){
+            if (posicoes[k][j]==pos_dad[i][j])
+              flag++;
+          }
+          if(flag == 3)
+            break; 
+        }
+        if (flag != 3){
+          for(int j = 0; j < 3; j++)
+            posicoes[nr_atoms][j] = pos_dad[i][j];
+          nr_atoms ++;
+          //cout<<"dad above"<<endl;
+        }
+      }
+      if(nr_atoms== N_atomos)
+        break;
+    }
+  }
+  /*
+
+  cout<<nr_atoms<<endl;
+  cout<<"aaa"<<endl;
+
+  cout << "daughter Atom 1 " << " : " <<posicoes[0][0] << ", " << posicoes[0][1] << ", " << posicoes[0][2] << endl;
+  cout << "daughter Atom 2 " << " : " <<posicoes[1][0] << ", " << posicoes[1][1] << ", " << posicoes[1][2] << endl;
+  cout << "daughter Atom 3 " << " : " <<posicoes[2][0] << ", " << posicoes[2][1] << ", " << posicoes[2][2] << endl;
+  cout << "-------------"<<endl;*/
+
+}
+
