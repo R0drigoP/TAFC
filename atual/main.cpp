@@ -3,6 +3,7 @@
 #include "TCanvas.h"
 #include "TAxis.h"
 #include <ctime>
+#include <fstream>
 #include "mating_func.h"
 #include "global.h"
 
@@ -10,9 +11,9 @@ using namespace std;
 
 //global variables
 int N_moleculas = 30;
-int N_atomos = 3;
-int dim_caixa = 10;
-double survival_rate = 0.45;
+int N_atomos = 4;
+int dim_caixa = 1;
+double survival_rate = 0.2;
 double mutation_prob = 0.05;
 int max_iter = 10000;
 
@@ -35,6 +36,9 @@ int main(){
 
   TCanvas *c1 = new TCanvas();
   auto gr = new TGraph();
+
+  ofstream text_file("best_molecule.bs");
+  ofstream movie_file("best_molecule.mv");
   
   //population of molecules
   vector<molecula*> pop;
@@ -75,25 +79,44 @@ int main(){
 
     //cout<<"sorted"<<endl;
 
+    if(iter == 1){
+      double** best_pos = pop[0]->Get_Pos();
+      for(int i=0; i<N_atomos; ++i){
+	text_file << "atom C " << flush;
+	for(int j=0; j<3; ++j)
+	  text_file << best_pos[i][j] << " " << flush;
+	text_file << endl;
+      }
+    }
+    else if(iter%1000==0){
+      movie_file << "frame" << endl;
+      double** best_pos = pop[0]->Get_Pos();
+      for(int i=0; i<N_atomos; ++i){
+	for(int j=0; j<3; ++j)
+	  movie_file << best_pos[i][j] << " ";
+      }
+      movie_file << endl << endl;
+    }
+    
     gr -> AddPoint( iter, pop[0] -> Get_Pot());
-
+    
     //cout<<"added point"<<endl;
-
+    
     if( mating == 1){
       parent_probability( pop, is_parent, parent_order);
       generate_children( pop, parent_order);
-
+      
     }
-
+    
     if( mating == 0){
-
+      
       for(int mol = 0; mol < N_moleculas; mol++){
       	pop[mol] -> Mutate();
       	pop[mol] -> OtherPotential();
       }
       
       sort(pop.begin(), pop.end(), molecula::LessPot);
-
+      
       for(int mol = survival_rate*N_moleculas; mol < N_moleculas; mol += survival_rate*N_moleculas){              
         int alive = 0;
         while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){
@@ -102,30 +125,39 @@ int main(){
           ++alive;
         }
       }
+    }
+    
+    if( iter == max_iter-1){
+      positions = pop[0] -> Get_Pos();
+      
+      for(int i = 0; i < N_atomos; i++)
+	cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
+    }
+    
   }
-
-  if( iter == max_iter-1){
-    positions = pop[0] -> Get_Pos();
-   
-    for(int i = 0; i < N_atomos; i++)
-      cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
-  }
-
-  }
-
+  
   delete[] is_parent;
   delete[] parent_order;
-
+  
   for(int i = 0; i < 3; ++i) 
     delete[] positions[i];
-    
+  
   delete[] positions;
-
+  
   pop.clear();
-
+  
+  text_file << endl << "spec C 0.1 Red" << endl
+	    << endl << "bonds C C 0.5 1.5 0.01 0.0"
+	    << endl << "bonds C H 0.4 1.0 0.01 1.0"
+	    << endl << "scale 100"
+	    << endl << "inc 3" << flush;
+  
   c1 -> cd();
   gr -> Draw("AP");
   c1 -> SaveAs("evolution.pdf");
+  
+  text_file.close();
+  movie_file.close();
   
   return 0;
 }
