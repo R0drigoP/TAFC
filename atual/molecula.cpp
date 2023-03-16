@@ -44,23 +44,58 @@ void molecula::Mating(molecula* mom, molecula* dad, double gene_prop){
   }
 }
 
-void molecula::Mating_Plano(molecula* mom, molecula* dad, double gene_prop = 0){
+/*void molecula::Mating_Plano(molecula* mom, molecula* dad){
   //escolher parte dos atomos da mãe e parte dos átomos do pai
   double **pos_mom = mom->Get_Pos();
   double **pos_dad = dad->Get_Pos();
 
-  double pos_CM[N_atomos][3];
+  double pos_CM[3];
 
+  for(int i = 0; i < 3; i++)
+    pos_CM[i] = 0;
+  
   //posicao centro de massa 
   for(int i = 0; i < N_atomos; i++)
     for(int j = 0; j < 3; j++)
-      pos_CM[i][j] = pos_mom[i][j] + pos_dad[i][j];
-  
-  for()
+      pos_CM[j] += (pos_mom[i][j] + pos_dad[i][j])/2;
 
+  for(int i = 0; i < 3; i++)
+    pos_CM[i] = pos_CM[i]/N_atomos; 
+  
+  
+  //cortar a caixa c/ plano c/ z cte.
+  //Molecula filha resulta dos atomos da mãe que se encontram acima do plano + atomos do pai a baixo do plano
+
+  int nr_atoms_mom = 0, nr_atoms_dad = 0, nr_atoms = 0;
+
+  while( nr_atoms < N_atomos ){
+
+    for (int i = 0; i < N_atomos; i++){
+
+      if(pos_mom[i][2] > pos_CM[2]){
+        for(int j = 0; j < 3; j++)
+          posicoes[nr_atoms][j] = pos_mom[i][j];
+
+        nr_atoms_mom += 1;
+        nr_atoms += 1;
+        cout << nr_atoms << endl;
+
+      }
+
+      if(pos_dad[i][2] < pos_CM[2]){
+        for(int j = 0; j < 3; j++)
+          posicoes[nr_atoms][j] = pos_dad[i][j];
+
+        nr_atoms_dad += 1;
+        nr_atoms += 1;
+        cout << nr_atoms << endl;
+      }
+    
+    }
+  }
 
 }
-
+*/
 
 molecula::~molecula() {
     //apagar posicoes

@@ -9,11 +9,11 @@
 using namespace std;
 
 //global variables
-int N_moleculas = 150;
+int N_moleculas = 70;
 int N_atomos = 3;
 int dim_caixa = 10;
-double survival_rate = 0.2;
-double mutation_prob = 0.05;
+double survival_rate = 0.4;
+double mutation_prob = 0.02;
 int max_iter = 5000;
 double **positions;
 
