@@ -15,7 +15,7 @@ class molecula{
 public:
 
   //Constructors and Destructor
-  molecula(int n_atomos, int dim_caixa, double mutation_rate);
+  molecula(int n_atomos=0, int dim_caixa=0, double mutation_rate=0.);
   molecula(const molecula&);
   molecula(molecula* mom, molecula* dad, double gene_prop, int n_atomos=0);
   ~molecula();
@@ -27,7 +27,7 @@ public:
   double Get_Pot() {return f_value;}
 
   //Setters
-  void Set_Pos(double** pos);
+  void Set_Pos(double** pos) {posicoes = pos;}
   
   //Comparator
   static bool LessPot(molecula* mol1, molecula* mol2) {return mol1->Get_Pot() < mol2->Get_Pot();}
@@ -35,14 +35,13 @@ public:
 
   //Calculations
   double Potencial();
-  void OtherPotential();
+  double OtherPotential();
 
-  void Mating_Plano3(molecula* mom, molecula* dad);
-
+  void Mating(molecula* mom, molecula* dad, double gene_prop=0);
+  void Mating_Plano(molecula* mom, molecula* dad, double gene_prop=0);
   void Mutate();
 
   void Mutate_1Atom();
-
 private:
   int N_atomos;
   int Dim_caixa;
