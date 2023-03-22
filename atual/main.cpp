@@ -11,11 +11,11 @@ using namespace std;
 
 //global variables
 int N_moleculas = 30;
-int N_atomos = 4;
-int dim_caixa = 1;
+int N_atomos = 13;
+int dim_caixa = 10;
 double survival_rate = 0.2;
 double mutation_prob = 0.05;
-int max_iter = 10000;
+int max_iter = 30000;
 
 int parents_nb = int(survival_rate * N_moleculas + 0.5);
 int couples_nb = int(parents_nb/2);
@@ -82,22 +82,22 @@ int main(){
     if(iter == 1){
       double** best_pos = pop[0]->Get_Pos();
       for(int i=0; i<N_atomos; ++i){
-	text_file << "atom C " << flush;
-	for(int j=0; j<3; ++j)
-	  text_file << best_pos[i][j] << " " << flush;
-	text_file << endl;
+        text_file << "atom C " << flush;
+        for(int j=0; j<3; ++j)
+          text_file << best_pos[i][j] << " " << flush;
+        text_file << endl;
       }
     }
     else if(iter%1000==0){
       movie_file << "frame" << endl;
       double** best_pos = pop[0]->Get_Pos();
       for(int i=0; i<N_atomos; ++i){
-	for(int j=0; j<3; ++j)
-	  movie_file << best_pos[i][j] << " ";
+        for(int j=0; j<3; ++j)
+          movie_file << best_pos[i][j] << " ";
       }
       movie_file << endl << endl;
     }
-    
+
     gr -> AddPoint( iter, pop[0] -> Get_Pot());
     
     //cout<<"added point"<<endl;
@@ -119,8 +119,7 @@ int main(){
       
       for(int mol = survival_rate*N_moleculas; mol < N_moleculas; mol += survival_rate*N_moleculas){              
         int alive = 0;
-        while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){
-          cout<<mol<<" "<<alive<<endl;                          
+        while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){                         
           pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
           ++alive;
         }
@@ -131,7 +130,7 @@ int main(){
       positions = pop[0] -> Get_Pos();
       
       for(int i = 0; i < N_atomos; i++)
-	cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
+        cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
     }
     
   }
