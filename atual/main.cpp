@@ -15,13 +15,13 @@ int N_atomos = 4;
 int dim_caixa = 1;
 double survival_rate = 0.2;
 double mutation_prob = 0.05;
-int max_iter = 10000;
+int max_iter = 100;
 
 int parents_nb = int(survival_rate * N_moleculas + 0.5);
 int couples_nb = int(parents_nb/2);
 int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 1;
+bool mating = 0;
 
 //probability of each molecule to be a parent
 int main(){
@@ -58,7 +58,7 @@ int main(){
 
   for(int iter = 0; iter < max_iter; iter++){
 
-    cout << "ITER NR " << iter << endl;
+    //cout << "ITER NR " << iter << endl;
     /*
     for(int i = 0; i < N_moleculas; i++){
       cout<<"Molecula"<<i<<endl;
@@ -120,7 +120,7 @@ int main(){
       for(int mol = survival_rate*N_moleculas; mol < N_moleculas; mol += survival_rate*N_moleculas){              
         int alive = 0;
         while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){
-          cout<<mol<<" "<<alive<<endl;                          
+          //cout<<mol<<" "<<alive<<endl;                          
           pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
           ++alive;
         }
@@ -130,8 +130,8 @@ int main(){
     if( iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
       
-      for(int i = 0; i < N_atomos; i++)
-	cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
+      //for(int i = 0; i < N_atomos; i++)
+      //cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
     }
     
   }
@@ -143,6 +143,10 @@ int main(){
     delete[] positions[i];
   
   delete[] positions;
+
+  //Forma correta de destruir o vetor mas dá seg fault
+  //for(vector<molecula*>::iterator i = pop.begin(); i != pop.end(); ++i)
+  //delete *i;
   
   pop.clear();
   
@@ -150,7 +154,7 @@ int main(){
 	    << endl << "bonds C C 0.5 1.5 0.01 0.0"
 	    << endl << "bonds C H 0.4 1.0 0.01 1.0"
 	    << endl << "scale 100"
-	    << endl << "inc 3" << flush;
+	    << endl << "inc 5.0" << flush;
   
   c1 -> cd();
   gr -> Draw("AP");

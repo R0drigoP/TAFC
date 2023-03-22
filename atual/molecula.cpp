@@ -16,6 +16,8 @@ molecula::molecula(int n_atomos, int dim_caixa, double mutation_rate) : N_atomos
     //cout << "Pos: x:"<< posicoes[j][0] << " - y:" << posicoes[j][1] << " - z:"  << posicoes[j][2] << endl;
     }
   }
+
+  delete gRandom;
 }
 
 molecula::molecula(const molecula& mol) :
@@ -32,6 +34,21 @@ molecula::molecula(molecula* mom, molecula* dad, double gene_prop, int n_atomos)
     }
   }
 }
+
+molecula::~molecula() {
+  cout << "Destructor" << endl;
+  //apagar posicoes
+  for(int i = 0; i < 3; ++i){ 
+    cout << i << endl;
+    delete[] posicoes[i];
+  }
+
+  cout << "ola" << endl;
+  delete[] posicoes;
+  cout << "adeus" << endl;
+}
+
+///////
 
 void molecula::Mating(molecula* mom, molecula* dad, double gene_prop){
   double **pos_mom = mom->Get_Pos();
@@ -168,14 +185,6 @@ void molecula::Mating_Plano(molecula* mom, molecula* dad){
 }
 
 
-molecula::~molecula() {
-    //apagar posicoes
-    for(int i = 0; i < 3; ++i) 
-      delete[] posicoes[i];
-    
-    delete[] posicoes;
-}
-
 //Operators
 void molecula::operator=(const molecula& mol){
   for(int i=0; i<N_atomos; ++i){
@@ -256,6 +265,8 @@ void molecula::Mutate(){
         posicoes[atom_to_mutate][i] -= 2*mutation;
     }
   }
+
+  delete gRandom;
 }
 
 void molecula::Mutate_1Atom(){
@@ -267,8 +278,8 @@ void molecula::Mutate_1Atom(){
     posicoes[atom_to_mutate][j] += mutation;
     if(posicoes[atom_to_mutate][j] > Dim_caixa)
       posicoes[atom_to_mutate][j] -= 2*mutation;
-    
   }
+  delete gRandom;
 }
 //--------------------------------------------
 
@@ -389,6 +400,8 @@ void molecula::Mating_Plano3(molecula* mom, molecula* dad){
         break;
     }
   }
+
+  delete gRandom;
   /*
 
   cout<<nr_atoms<<endl;
