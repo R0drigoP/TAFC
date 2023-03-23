@@ -1,5 +1,6 @@
 #include "molecula.h"
 
+
 //Constructors and Destructor
 
 molecula::molecula(int n_atomos, int dim_caixa, double mutation_rate) : N_atomos(n_atomos), Dim_caixa(dim_caixa), mute_rate(mutation_rate), f_value(0.) {
@@ -211,6 +212,8 @@ double molecula::Potencial(){
   float d_aux = 0;
 
   f_value = 0.;
+
+  nb_of_calls++;
   
   //nao sei se esta certo, confirmar com os outros
   for (int j = 0; j < N_atomos; j++){
@@ -235,16 +238,19 @@ void molecula::OtherPotential(){
   float epsilon = 1; //(kJ/mol)
   double f = 0.;
 
+  nb_of_calls++;
+
+
   for(int i=0; i<N_atomos-1; ++i){
     for(int j=i+1; j<N_atomos; ++j){
       //Calculate radius
       double r = 0.;
       for(int k=0; k<3; ++k)
-	r += (posicoes[i][k] - posicoes[j][k])*(posicoes[i][k] - posicoes[j][k]);
+        r += (posicoes[i][k] - posicoes[j][k])*(posicoes[i][k] - posicoes[j][k]);
       r = sqrt(r);
 
       //Calculate Potential and sum to f_value
-      f += 4*epsilon*(pow((sigma/r), 12) - pow((sigma/r), 6));
+      f += 4*epsilon*( pow((sigma/r), 12) - pow((sigma/r), 6) );
     }
   }
   
@@ -259,7 +265,7 @@ void molecula::Mutate(){
   if(check_if_mute < mute_rate){
     int atom_to_mutate = (int)gRandom->Uniform(0, N_atomos);
     for(int i=0; i<3; ++i){
-      double mutation = gRandom->Uniform(-1,1)*0.01*Dim_caixa;
+      double mutation = gRandom->Uniform(-1,1)*0.1*Dim_caixa;
       posicoes[atom_to_mutate][i] += mutation;
       if(posicoes[atom_to_mutate][i] > Dim_caixa)
         posicoes[atom_to_mutate][i] -= 2*mutation;
@@ -274,7 +280,7 @@ void molecula::Mutate_1Atom(){
   int atom_to_mutate = int(gRandom->Uniform(0,N_atomos));
   
   for(int j=0; j<3; ++j){
-    double mutation = gRandom->Uniform(-1,1)*0.01*Dim_caixa;
+    double mutation = gRandom->Uniform(-1,1)*0.1*Dim_caixa;
     posicoes[atom_to_mutate][j] += mutation;
     if(posicoes[atom_to_mutate][j] > Dim_caixa)
       posicoes[atom_to_mutate][j] -= 2*mutation;

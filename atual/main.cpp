@@ -2,6 +2,7 @@
 #include "TGraph.h"
 #include "TCanvas.h"
 #include "TAxis.h"
+#include "TH1F.h"
 #include <ctime>
 #include <fstream>
 #include "mating_func.h"
@@ -10,26 +11,36 @@
 using namespace std;
 
 //global variables
-int N_moleculas = 30;
-int N_atomos = 4;
+int N_moleculas = 80;
+int N_atomos = 38;
 int dim_caixa = 1;
 double survival_rate = 0.2;
-double mutation_prob = 0.05;
-int max_iter = 100;
+double mutation_prob = 0.20;
+int max_iter = 80000;
 
 int parents_nb = int(survival_rate * N_moleculas + 0.5);
 int couples_nb = int(parents_nb/2);
 int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 0;
+bool mating = 1;
+
+int nb_of_calls = 0;
+
+double final_pot =0;
 
 //probability of each molecule to be a parent
 int main(){
 
   double **positions;
 
+  positions = new double*[N_atomos];
+  
+  for (int i = 0; i < N_atomos; i++) 
+    positions[i] = new double[3];
+
+
   if(mating == 0)
-    survival_rate = 0.3;
+    survival_rate = 0.1;
 
   if(mating == 1)
     survival_rate = 0.45;
@@ -43,10 +54,6 @@ int main(){
   //population of molecules
   vector<molecula*> pop;
 
-  positions = new double*[N_atomos];
-  
-  for (int i = 0; i < N_atomos; i++) 
-    positions[i] = new double[3];
 
   for(int i = 0; i < N_moleculas; ++i)
     pop.push_back(new molecula(N_atomos, dim_caixa, mutation_prob));
@@ -92,10 +99,14 @@ int main(){
       movie_file << "frame" << endl;
       double** best_pos = pop[0]->Get_Pos();
       for(int i=0; i<N_atomos; ++i){
-	for(int j=0; j<3; ++j)
-	  movie_file << best_pos[i][j] << " ";
+        for(int j=0; j<3; ++j)
+          movie_file << best_pos[i][j]/double(dim_caixa) << " ";
       }
       movie_file << endl << endl;
+
+      cout << "ITER NR " << iter << endl;
+
+      cout << "Pot so far " << pop[0]->Get_Pot() << endl;
     }
     
     gr -> AddPoint( iter, pop[0] -> Get_Pot());
@@ -103,19 +114,21 @@ int main(){
     //cout<<"added point"<<endl;
     
     if( mating == 1){
-      parent_probability( pop, is_parent, parent_order);
-      generate_children( pop, parent_order);
+      //parent_probability( pop, is_parent, parent_order);
+      //generate_children( pop, parent_order);
+      generate_children2( pop);
       
     }
     
     if( mating == 0){
       
+      /*
       for(int mol = 0; mol < N_moleculas; mol++){
       	pop[mol] -> Mutate();
-      	pop[mol] -> OtherPotential();
-      }
+      	pop[mol] -> Potencial();
+      }*/
       
-      sort(pop.begin(), pop.end(), molecula::LessPot);
+      //sort(pop.begin(), pop.end(), molecula::LessPot);
       
       for(int mol = survival_rate*N_moleculas; mol < N_moleculas; mol += survival_rate*N_moleculas){              
         int alive = 0;
@@ -125,10 +138,18 @@ int main(){
           ++alive;
         }
       }
+
+      for(int mol = 0; mol < N_moleculas; mol++){
+        pop[mol] -> Mutate();
+      }
     }
     
     if( iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
+      final_pot =  pop[0]->Get_Pot();
+      cout << "Final Pot " <<final_pot << endl;
+
+
       
       //for(int i = 0; i < N_atomos; i++)
       //cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
@@ -147,9 +168,11 @@ int main(){
   //Forma correta de destruir o vetor mas dá seg fault
   //for(vector<molecula*>::iterator i = pop.begin(); i != pop.end(); ++i)
   //delete *i;
+
+
   
   pop.clear();
-  
+  double atom_size = 0.1/dim_caixa;
   text_file << endl << "spec C 0.1 Red" << endl
 	    << endl << "bonds C C 0.5 1.5 0.01 0.0"
 	    << endl << "bonds C H 0.4 1.0 0.01 1.0"
@@ -157,11 +180,17 @@ int main(){
 	    << endl << "inc 5.0" << flush;
   
   c1 -> cd();
+  gr->GetHistogram()->SetMaximum(-1.*final_pot);
+  gr->GetHistogram()->SetMinimum(1.01*final_pot);
+
   gr -> Draw("AP");
   c1 -> SaveAs("evolution.pdf");
   
   text_file.close();
   movie_file.close();
+
+
+  cout<<"Total pot calls: "<<nb_of_calls<<endl;
   
   return 0;
 }
