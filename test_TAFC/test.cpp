@@ -10,9 +10,9 @@
 using namespace std;
 
 int main(){
-  unsigned short int N_mol = 30, N_atoms = 4, L_box = 2;
-  int N_gens = 5000;
-  float mute_rate = 0.01, surv_rate = 0.2;
+  unsigned short int N_mol = 30, N_atoms = 13, L_box = 10;
+  int N_gens = 50000;
+  float mute_rate = 0.1, surv_rate = 0.2;
 
   vector<Molecule*> pop;
 
