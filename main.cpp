@@ -123,42 +123,25 @@ int main(){
     }
     
     gr -> AddPoint( iter, pop[0] -> Get_Pot());
-    
-    //cout<<"added point"<<endl;
-    
-    if( mating == 1){
-      //parent_probability( pop, is_parent, parent_order);
-      //generate_children( pop, parent_order);
-      for(int i = (parents_nb+1) ; i <N_moleculas; i++)
-        pop[i]->generate_children3( pop);
-      for(int mol = 0; mol < N_moleculas; mol++)
-        pop[mol] -> Mutate();
-      
-    }
-    
-    if( mating == 0){
-      
-      /*
-      for(int mol = 0; mol < N_moleculas; mol++){
-      	pop[mol] -> Mutate();
-      	pop[mol] -> Potencial();
-      }*/
-      
-      //sort(pop.begin(), pop.end(), molecula::LessPot);
-      
-      for(int mol = survival_rate*N_moleculas; mol < N_moleculas; mol += survival_rate*N_moleculas){              
-        int alive = 0;
-        while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){
-          //cout<<mol<<" "<<alive<<endl;                          
-          pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
-          ++alive;
-        }
+ 
+    //matar os mais fracos
+    for(int mol = survival_rate*N_moleculas; mol < N_moleculas; mol += survival_rate*N_moleculas){              
+      int alive = 0;
+      while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){
+        //cout<<mol<<" "<<alive<<endl;                          
+        pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
+        ++alive;
       }
+    }
 
-      for(int mol = 0; mol < N_moleculas; mol++){
-        pop[mol] -> Mutate();
-      }
+    if( mating == 1)
+      for(int i = (parents_nb-1) ; i <N_moleculas; i++)
+        pop[i]->generate_children3( pop);
+
+    for(int mol = 0; mol < N_moleculas; mol++){
+      pop[mol] -> Mutate();
     }
+
     
     if( iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
