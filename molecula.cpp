@@ -290,6 +290,37 @@ void molecula::Mutate_1Atom(){
 }
 //--------------------------------------------
 
+void molecula::generate_children3(vector<molecula*> pop){
+
+  gRandom = new TRandom3(0);
+
+  double check_if_sex = gRandom->Uniform(0,1);
+
+  int mom_index=0;
+  int dad_index=0;
+
+
+
+  if(check_if_sex < sex_prob ){
+
+    //choose random parents from the surviving population
+    mom_index = (int)gRandom->Uniform(0, parents_nb);
+    dad_index = (int)gRandom->Uniform(0, parents_nb);
+
+    //and make sure they are different
+    while(dad_index==mom_index)
+      dad_index = (int)gRandom->Uniform(0, parents_nb);
+
+    //call reproduction method
+    //maybe add some new ones later...
+    this->Mating_Plano3(pop[mom_index],pop[dad_index]);
+
+
+  }
+  delete gRandom;
+    
+}
+
 void molecula::Mating_Plano3(molecula* mom, molecula* dad){
 
   double **pos_mom = mom -> Get_Pos();

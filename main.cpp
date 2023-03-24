@@ -16,20 +16,33 @@ int N_atomos = 13;
 int dim_caixa = 1;
 double survival_rate = 0.2;
 double mutation_prob = 0.10;
+double sex_prob = 0.3;
 int max_iter = 10000;
 
-int parents_nb = int(survival_rate * N_moleculas + 0.5);
+int parents_nb = int(survival_rate * N_moleculas );
 int couples_nb = int(parents_nb/2);
 int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 0;
+bool mating = 1;
 
 int nb_of_calls = 0;
 
 double final_pot =0;
 
+
 //probability of each molecule to be a parent
 int main(){
+
+  if(mating==1 &&  N_moleculas * survival_rate < 2){
+    cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
+    cout<<"Increase your population or the survival probability"<<endl;
+    return 1;
+  }
+
+  if(survival_rate<0 || survival_rate>1 || parents_nb>=N_moleculas){
+    cout<<"check your survival_rate"<<endl;
+    return 1;
+  }
 
   double **positions;
 
@@ -43,7 +56,7 @@ int main(){
     survival_rate = 0.1;
 
   if(mating == 1)
-    survival_rate = 0.45;
+    survival_rate = 0.4548584;
 
   TCanvas *c1 = new TCanvas();
   auto gr = new TGraph();
@@ -116,7 +129,10 @@ int main(){
     if( mating == 1){
       //parent_probability( pop, is_parent, parent_order);
       //generate_children( pop, parent_order);
-      generate_children2( pop);
+      for(int i = (parents_nb+1) ; i <N_moleculas; i++)
+        pop[i]->generate_children3( pop);
+      for(int mol = 0; mol < N_moleculas; mol++)
+        pop[mol] -> Mutate();
       
     }
     
@@ -146,7 +162,7 @@ int main(){
     
     if( iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
-      final_pot =  pop[0]->Get_Pot();
+      final_pot =  pop[0]-> Get_Pot();
       cout << "Final Pot " <<final_pot << endl;
 
 

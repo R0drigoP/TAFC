@@ -4,6 +4,7 @@ extern int N_atomos;
 extern int dim_caixa;
 extern double survival_rate;
 extern double mutation_prob;
+extern double sex_prob;
 extern int max_iter;
 
 extern int parents_nb;
