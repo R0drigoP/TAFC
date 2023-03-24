@@ -12,17 +12,17 @@ using namespace std;
 
 //global variables
 int N_moleculas = 80;
-int N_atomos = 38;
+int N_atomos = 13;
 int dim_caixa = 1;
 double survival_rate = 0.2;
-double mutation_prob = 0.20;
-int max_iter = 80000;
+double mutation_prob = 0.10;
+int max_iter = 10000;
 
 int parents_nb = int(survival_rate * N_moleculas + 0.5);
 int couples_nb = int(parents_nb/2);
 int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 1;
+bool mating = 0;
 
 int nb_of_calls = 0;
 
@@ -76,9 +76,9 @@ int main(){
 
       }*/
 
-
-    for(int i = 0; i < N_moleculas; ++i)
-      pop[i] -> Potencial();
+    if(iter==0)
+      for(int i = 0; i < N_moleculas; ++i)
+        pop[i] -> Potencial();
 
     //cout<<"got potential"<<endl;
 
@@ -89,10 +89,10 @@ int main(){
     if(iter == 1){
       double** best_pos = pop[0]->Get_Pos();
       for(int i=0; i<N_atomos; ++i){
-	text_file << "atom C " << flush;
-	for(int j=0; j<3; ++j)
-	  text_file << best_pos[i][j] << " " << flush;
-	text_file << endl;
+        text_file << "atom C " << flush;
+        for(int j=0; j<3; ++j)
+          text_file << best_pos[i][j] << " " << flush;
+        text_file << endl;
       }
     }
     else if(iter%1000==0){

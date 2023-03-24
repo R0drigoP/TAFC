@@ -270,6 +270,7 @@ void molecula::Mutate(){
       if(posicoes[atom_to_mutate][i] > Dim_caixa)
         posicoes[atom_to_mutate][i] -= 2*mutation;
     }
+    f_value = Potencial();
   }
 
   delete gRandom;
@@ -406,6 +407,8 @@ void molecula::Mating_Plano3(molecula* mom, molecula* dad){
         break;
     }
   }
+
+  f_value = Potencial();
 
   delete gRandom;
   /*
