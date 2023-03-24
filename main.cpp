@@ -23,7 +23,7 @@ int parents_nb = int(survival_rate * N_moleculas );
 int couples_nb = int(parents_nb/2);
 int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 1;
+bool mating = 0;
 
 int nb_of_calls = 0;
 
@@ -124,7 +124,7 @@ int main(){
     
     gr -> AddPoint( iter, pop[0] -> Get_Pot());
  
-    //matar os mais fracos
+    //matar os mais fracos -> fazer copias da melhor pop (se calhar atribuir alguma aleatoriadade a este processo)
     for(int mol = survival_rate*N_moleculas; mol < N_moleculas; mol += survival_rate*N_moleculas){              
       int alive = 0;
       while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){
@@ -179,7 +179,7 @@ int main(){
 	    << endl << "inc 5.0" << flush;
   
   c1 -> cd();
-  gr->GetHistogram()->SetMaximum(-0.5*final_pot);
+  gr->GetHistogram()->SetMaximum(-0.1*final_pot);
   gr->GetHistogram()->SetMinimum(1.01*final_pot);
 
   gr -> Draw("AP");
