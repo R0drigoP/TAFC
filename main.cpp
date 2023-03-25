@@ -5,25 +5,24 @@
 #include "TH1F.h"
 #include <ctime>
 #include <fstream>
-#include "mating_func.h"
 #include "global.h"
 
 using namespace std;
 
 //global variables
-int N_moleculas = 80;
+int N_moleculas = 100;
 int N_atomos = 13;
 int dim_caixa = 1;
 double survival_rate = 0.1;
 double mutation_prob = 0.10;
 double sex_prob = 0.3;
-int max_iter = 10000;
+int max_iter = 1000;
 
 int parents_nb = int(survival_rate * N_moleculas );
-int couples_nb = int(parents_nb/2);
-int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
+//int couples_nb = int(parents_nb/2);
+//int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 0;
+bool mating = 1;
 
 int nb_of_calls = 0;
 int nb_of_calls_mute = 0;
@@ -37,6 +36,7 @@ double final_pot =0;
 //probability of each molecule to be a parent
 int main(){
 
+
   if(mating==1 &&  N_moleculas * survival_rate < 2){
     cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
     cout<<"Increase your population or the survival probability"<<endl;
@@ -48,7 +48,14 @@ int main(){
     return 1;
   }
 
+
   double **positions;
+
+
+  int* flag = new int[N_moleculas];
+
+  for (int i = 0; i < N_moleculas; i++) 
+    flag[i] = 0;
 
   positions = new double*[N_atomos];
   
@@ -71,8 +78,8 @@ int main(){
  
   // is_parent[i] == 0 : False: Molecule i is not a parent
   // is_parent[i] == 1 : True: Molecule i is not a parent
-  bool *is_parent = new bool[N_moleculas];
-  int *parent_order = new int[couples_nb*2];
+  //bool *is_parent = new bool[N_moleculas];
+  //int *parent_order = new int[couples_nb*2];
 
   for(int iter = 0; iter < max_iter; iter++){
 
@@ -119,9 +126,12 @@ int main(){
 
       cout << "Pot so far " << pop[0]->Get_Pot() << endl;
 
-      cout<<"nb of mutations "<<nb_of_calls_mute<<endl;
+      //cout<<"nb of mutations "<<nb_of_calls_mute<<endl;
       //cout<<"nb of mat plano "<<nb_of_calls_mat_plano<<endl;
       //cout<<"nb of mat       "<<nb_of_calls_mat<<endl;
+      cout<<"pop x iter      "<<N_moleculas*(iter+1)<<endl;
+      cout<<"total reproduti "<<nb_of_calls_mute+nb_of_calls_mat_plano+nb_of_calls_mat<<endl;
+      cout<<"nb of func calss"<<nb_of_calls<<endl;
 
     }
     
@@ -139,12 +149,19 @@ int main(){
       }
     }
 
-    if( mating == 1)
-      for(int i = (parents_nb-1) ; i <N_moleculas; i++)
-        pop[i]->generate_children3( pop);
+    if( mating == 1){
+      //setting flag to 0 for parents
+      for(int i = 0 ; i < parents_nb; i++)
+        flag[i] = 0;
 
+      //sexual reproduction
+      for(int i = parents_nb ; i <N_moleculas; i++)
+        flag[i] = pop[i]->generate_children3( pop);
+    }
+
+    //assexual reproduction
     for(int mol = 0; mol < N_moleculas; mol++){
-      pop[mol] -> Mutate();
+      pop[mol] -> Mutate(flag[mol]);
     }
 
     
@@ -161,14 +178,14 @@ int main(){
     
   }
   
-  delete[] is_parent;
-  delete[] parent_order;
+  //delete[] is_parent;
+  //delete[] parent_order;
   
   for(int i = 0; i < 3; ++i) 
     delete[] positions[i];
   
   delete[] positions;
-
+  delete[] flag;
   //Forma correta de destruir o vetor mas dá seg fault
   //for(vector<molecula*>::iterator i = pop.begin(); i != pop.end(); ++i)
   //delete *i;

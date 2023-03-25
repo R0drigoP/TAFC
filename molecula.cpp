@@ -262,7 +262,7 @@ void molecula::OtherPotential(){
 }
 
 
-void molecula::Mutate(){
+void molecula::Mutate(int flag){
   gRandom = new TRandom3(0);
   double check_if_mute = gRandom->Uniform(0,1);
   
@@ -277,6 +277,10 @@ void molecula::Mutate(){
     }
     f_value = Potencial();
   }
+  //se nao tiver feito mutacao calcula na mesma o potencial para os que sofreram reproducao sexuada
+  else if(flag==1)
+    f_value = Potencial();
+
 
   delete gRandom;
 }
@@ -295,7 +299,7 @@ void molecula::Mutate_1Atom(){
 }
 //--------------------------------------------
 
-void molecula::generate_children3(vector<molecula*> pop){
+int molecula::generate_children3(vector<molecula*> pop){
 
   gRandom = new TRandom3(0);
 
@@ -327,9 +331,14 @@ void molecula::generate_children3(vector<molecula*> pop){
       nb_of_calls_mat ++;
       this->Mating(pop[mom_index],pop[dad_index],gRandom->Uniform(0,1));
     }
+    delete gRandom;
+    return 1;
   }
-  delete gRandom;
-    
+  else{
+    delete gRandom;   
+    return 0;
+  }
+  
 }
 
 void molecula::Mating_Plano3(molecula* mom, molecula* dad){
@@ -450,7 +459,7 @@ void molecula::Mating_Plano3(molecula* mom, molecula* dad){
     }
   }
 
-  f_value = Potencial();
+  //f_value = Potencial();
 
   delete gRandom;
   /*
