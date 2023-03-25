@@ -15,3 +15,9 @@ extern bool mating;
 
 //nb of calls to the function that calculates the potential
 extern int nb_of_calls;
+extern int nb_of_calls_mute;
+extern int nb_of_calls_mat;
+extern int nb_of_calls_mat_plano;
+
+
+

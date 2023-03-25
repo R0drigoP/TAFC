@@ -29,6 +29,7 @@ public:
 
   //Setters
   void Set_Pos(double** pos);
+  void Set_Pot(double pot);
   
   //Comparator
   static bool LessPot(molecula* mol1, molecula* mol2) {return mol1->Get_Pot() < mol2->Get_Pot();}

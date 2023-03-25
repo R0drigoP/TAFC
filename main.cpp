@@ -14,7 +14,7 @@ using namespace std;
 int N_moleculas = 80;
 int N_atomos = 13;
 int dim_caixa = 1;
-double survival_rate = 0.2;
+double survival_rate = 0.1;
 double mutation_prob = 0.10;
 double sex_prob = 0.3;
 int max_iter = 10000;
@@ -26,6 +26,10 @@ int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 bool mating = 0;
 
 int nb_of_calls = 0;
+int nb_of_calls_mute = 0;
+int nb_of_calls_mat = 0;
+int nb_of_calls_mat_plano = 0;
+
 
 double final_pot =0;
 
@@ -51,12 +55,6 @@ int main(){
   for (int i = 0; i < N_atomos; i++) 
     positions[i] = new double[3];
 
-
-  if(mating == 0)
-    survival_rate = 0.1;
-
-  if(mating == 1)
-    survival_rate = 0.4548584;
 
   TCanvas *c1 = new TCanvas();
   auto gr = new TGraph();
@@ -120,6 +118,11 @@ int main(){
       cout << "ITER NR " << iter << endl;
 
       cout << "Pot so far " << pop[0]->Get_Pot() << endl;
+
+      cout<<"nb of mutations "<<nb_of_calls_mute<<endl;
+      //cout<<"nb of mat plano "<<nb_of_calls_mat_plano<<endl;
+      //cout<<"nb of mat       "<<nb_of_calls_mat<<endl;
+
     }
     
     gr -> AddPoint( iter, pop[0] -> Get_Pot());
@@ -130,6 +133,8 @@ int main(){
       while(alive < survival_rate*N_moleculas && (mol+alive)<N_moleculas){
         //cout<<mol<<" "<<alive<<endl;                          
         pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
+        pop[mol+alive] -> Set_Pot(pop[alive] -> Get_Pot());
+
         ++alive;
       }
     }

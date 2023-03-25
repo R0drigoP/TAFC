@@ -203,6 +203,10 @@ void molecula::Set_Pos(double** new_pos){
   }
 }
 
+void molecula::Set_Pot(double pot){
+  f_value = pot;
+}
+
 
 //calcula o lennard_jones para cada molecula
 double molecula::Potencial(){
@@ -263,6 +267,7 @@ void molecula::Mutate(){
   double check_if_mute = gRandom->Uniform(0,1);
   
   if(check_if_mute < mute_rate){
+    nb_of_calls_mute ++;
     int atom_to_mutate = (int)gRandom->Uniform(0, N_atomos);
     for(int i=0; i<3; ++i){
       double mutation = gRandom->Uniform(-1,1)*0.1*Dim_caixa;
@@ -296,26 +301,32 @@ void molecula::generate_children3(vector<molecula*> pop){
 
   double check_if_sex = gRandom->Uniform(0,1);
 
-  int mom_index=0;
-  int dad_index=0;
 
-
+ 
 
   if(check_if_sex < sex_prob ){
 
     //choose random parents from the surviving population
-    mom_index = (int)gRandom->Uniform(0, parents_nb);
-    dad_index = (int)gRandom->Uniform(0, parents_nb);
+    int mom_index = (int)gRandom->Uniform(0, parents_nb);
+    int dad_index = (int)gRandom->Uniform(0, parents_nb);
 
     //and make sure they are different
     while(dad_index==mom_index)
       dad_index = (int)gRandom->Uniform(0, parents_nb);
 
+    double mating_type = gRandom->Uniform(0,1);
+
     //call reproduction method
     //maybe add some new ones later...
-    this->Mating_Plano3(pop[mom_index],pop[dad_index]);
+    if(mating_type<0.9){
+      nb_of_calls_mat_plano ++;
+      this->Mating_Plano3(pop[mom_index],pop[dad_index]);
+    }
 
-
+    else{
+      nb_of_calls_mat ++;
+      this->Mating(pop[mom_index],pop[dad_index],gRandom->Uniform(0,1));
+    }
   }
   delete gRandom;
     
