@@ -11,3 +11,6 @@ extern int couples_nb;
 extern int children_per_couple;
 
 extern bool mating;
+
+//nb of calls to the function that calculates the potential
+extern int nb_of_calls;

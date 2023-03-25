@@ -83,6 +83,29 @@ void generate_children(vector<molecula*> pop, int *parent_order ){
         double gene_prop = 1./(j+2);
 
         pop[parents_nb + i*children_per_couple + j] -> Mating_Plano3(pop[ parent_order[2*i] ], pop[ parent_order[2*i + 1] ]);
+        //pop[parents_nb + i*children_per_couple + j] -> Mating_Plano3(pop[ parent_order[2*i] ], pop[ parent_order[2*i + 1] ]);
+
+
+        pop[parents_nb + i*children_per_couple + j] -> Mutate();
+        
+      }
+}
+
+void generate_children2(vector<molecula*> pop){
+
+    double r;
+
+    srand((unsigned int)time(NULL));
+
+    for(int i = 0; i < couples_nb; i++)
+
+      for (int j = 0; j < children_per_couple; j++){
+        
+        double gene_prop = 1./(j+2);
+
+        pop[parents_nb + i*children_per_couple + j] -> Mating_Plano3(pop[ couples_nb*i ], pop[ couples_nb*i+1 ]);
+        //pop[parents_nb + i*children_per_couple + j] -> Mating_Plano3(pop[ parent_order[2*i] ], pop[ parent_order[2*i + 1] ]);
+
 
         pop[parents_nb + i*children_per_couple + j] -> Mutate();
         
