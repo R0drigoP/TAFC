@@ -134,15 +134,15 @@ int main(){
         //cout<<mol<<" "<<alive<<endl;                          
         pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
         pop[mol+alive] -> Set_Pot(pop[alive] -> Get_Pot());
-
+	
         ++alive;
       }
     }
-
+    
     if( mating == 1)
       for(int i = (parents_nb-1) ; i <N_moleculas; i++)
         pop[i]->generate_children3( pop);
-
+    
     for(int mol = 0; mol < N_moleculas; mol++){
       pop[mol] -> Mutate();
     }
