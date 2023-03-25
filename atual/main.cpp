@@ -10,18 +10,18 @@
 using namespace std;
 
 //global variables
-int N_moleculas = 30;
-int N_atomos = 4;
-int dim_caixa = 1;
-double survival_rate = 0.2;
-double mutation_prob = 0.05;
-int max_iter = 100;
+int N_moleculas = 100;
+int N_atomos = 38;
+int dim_caixa = 10;
+double survival_rate = 0.05;
+double mutation_prob = 0.15;
+int max_iter = 10000;
 
 int parents_nb = int(survival_rate * N_moleculas + 0.5);
 int couples_nb = int(parents_nb/2);
 int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 0;
+bool mating = 1;
 
 //probability of each molecule to be a parent
 int main(){
@@ -135,6 +135,8 @@ int main(){
     }
     
   }
+
+  cout << pop[0]->Get_Pot() << endl;
   
   delete[] is_parent;
   delete[] parent_order;
