@@ -39,7 +39,7 @@ public:
   double Potencial();
   void OtherPotential();
 
-  void generate_children3(vector<molecula*> pop);
+  int generate_children3(vector<molecula*> pop);
 
   void Mating(molecula* mom, molecula* dad, double gene_prop = 0);
   void Mating_Plano(molecula* mom, molecula* dad);
@@ -48,7 +48,7 @@ public:
   void Mating_Plano3(molecula* mom, molecula* dad);
 
 
-  void Mutate();
+  void Mutate(int flag);
 
   void Mutate_1Atom();
 

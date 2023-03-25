@@ -8,8 +8,8 @@ extern double sex_prob;
 extern int max_iter;
 
 extern int parents_nb;
-extern int couples_nb;
-extern int children_per_couple;
+//extern int couples_nb;
+//extern int children_per_couple;
 
 extern bool mating;
 
@@ -18,6 +18,3 @@ extern int nb_of_calls;
 extern int nb_of_calls_mute;
 extern int nb_of_calls_mat;
 extern int nb_of_calls_mat_plano;
-
-
-
