@@ -78,8 +78,8 @@ void molecule::Set_Fit(double fit){
 
 //Mutation and Reproduction
 
-void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag){
-  gRandom = new TRandom3(0);
+void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRandom3* gRandom){
+  //gRandom = new TRandom3(0);
   double check_if_mute = gRandom->Uniform(0,1);
   
   if(check_if_mute < mutation_prob){
@@ -98,13 +98,13 @@ void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag){
   else if(flag==1)
     this->Fit();
 
-  delete gRandom;
+  //delete gRandom;
 }
 
 
-int molecule::generate_children3(vector<molecule*> pop){
+int molecule::generate_children3(vector<molecule*> pop, TRandom3* gRandom){
 
-  gRandom = new TRandom3(0);
+  //gRandom = new TRandom3(0);
 
   double check_if_sex = gRandom->Uniform(0,1);
 
@@ -124,7 +124,7 @@ int molecule::generate_children3(vector<molecule*> pop){
     //maybe add some new ones later...
     if(mating_type<0.9){
       nb_of_calls_mat_plano ++;
-      this->Mating_Plano3(pop[mom_index],pop[dad_index]);
+      this->Mating_Plano3(pop[mom_index],pop[dad_index], gRandom);
     }
 
     else{
@@ -132,11 +132,11 @@ int molecule::generate_children3(vector<molecule*> pop){
       this->Mating(pop[mom_index],pop[dad_index],gRandom->Uniform(0,1));
     }
     
-    delete gRandom;
+    //delete gRandom;
     return 1;
   }
   
-  delete gRandom;   
+  //delete gRandom;   
   return 0;
   
 }
@@ -154,7 +154,7 @@ void molecule::Mating(molecule* mom, molecule* dad, double gene_prop){
 }
 
 
-void molecule::Mating_Plano3(molecule* mom, molecule* dad){
+void molecule::Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom){
 
   double **pos_mom = mom -> Get_Pos();
   double **pos_dad = dad -> Get_Pos();
@@ -163,7 +163,7 @@ void molecule::Mating_Plano3(molecule* mom, molecule* dad){
   int flag = 0;
   int nr_atoms = 0;
 
-  gRandom = new TRandom3(0);
+  //gRandom = new TRandom3(0);
   int dir = (int)gRandom -> Uniform(0,3);
 
   
@@ -274,7 +274,7 @@ void molecule::Mating_Plano3(molecule* mom, molecule* dad){
 
   //f_value = Potencial();
 
-  delete gRandom;
+  //delete gRandom;
   /*
 
   cout<<nr_atoms<<endl;

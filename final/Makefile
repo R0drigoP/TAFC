@@ -16,6 +16,9 @@ all: $(SOURCES) $(EXECUTABLE)
 rodri: 
 	$(CC) main.cpp molecule.cpp `root-config --cflags --glibs` -o main
 
+parallel:
+	$(CC) -fopenmp main.cpp molecule.cpp `root-config --cflags --glibs` -o main
+
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 

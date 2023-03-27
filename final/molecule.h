@@ -36,10 +36,10 @@ public:
   static bool LessPot(molecule* mol1, molecule* mol2) {return mol1->Get_Fit() < mol2->Get_Fit();}
 
   //Mutation and Reproduction
-  void Mutate(unsigned int iter, float m0, float alpha, int flag);
-  int generate_children3(vector<molecule*> pop);
+  void Mutate(unsigned int iter, float m0, float alpha, int flag, TRandom3* gRandom = NULL);
+  int generate_children3(vector<molecule*> pop, TRandom3* gRandom);
   void Mating(molecule* mom, molecule* dad, double gene_prop = 0.);
-  void Mating_Plano3(molecule* mom, molecule* dad);
+  void Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom);
 
 private:
   unsigned int N_atoms;
