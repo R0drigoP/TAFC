@@ -10,11 +10,12 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
     positions[i] = new double[3];
   
   gRandom = new TRandom3(0);
+  
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
     positions[i][j] = gRandom -> Uniform(0., l_box);
-  }
-
+  
+}
   delete gRandom;
 
   this->Fit();

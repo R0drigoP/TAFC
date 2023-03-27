@@ -20,7 +20,7 @@ unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
 //int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 1;
+bool mating = 0;
 
 unsigned int nb_of_calls = 0, nb_of_calls_mute = 0, nb_of_calls_mat = 0, nb_of_calls_mat_plano = 0;
 
@@ -123,14 +123,16 @@ int main(){
     gr -> AddPoint( iter, pop[0] -> Get_Fit());
  
     //matar os mais fracos -> fazer copias da melhor pop (se calhar atribuir alguma aleatoriadade a este processo)
-#pragma omp parallel for
+#pragma omp parallel
+    {
+#pragma omp for
     for(int mol = static_cast<int>(survival_rate*N_molecules); mol < N_molecules; mol += static_cast<int>(survival_rate*N_molecules)){              
       int alive = 0;
       while(alive < survival_rate*N_molecules && (mol+alive)<N_molecules){
         //cout<<mol<<" "<<alive<<endl;                          
         pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
         pop[mol+alive] -> Set_Fit(pop[alive] -> Get_Fit());
-
+	
         ++alive;
       }
     }
@@ -141,29 +143,23 @@ int main(){
         flag[i] = 0;
       
       //sexual reproduction
-#pragma omp parallel
-      {
-	TRandom3* gRandom = new TRandom3(0); 
+      TRandom3* gRandom = new TRandom3(0); 
 #pragma omp for
-	for(int i = parents_nb ; i <N_molecules; i++)
-	  flag[i] = pop[i]->generate_children3(pop, gRandom);
-	
-	delete gRandom;
-      }
+      for(int i = parents_nb ; i <N_molecules; i++)
+	flag[i] = pop[i]->generate_children3(pop, gRandom);
+      
+      delete gRandom;
     }
     
     //assexual reproduction
-#pragma omp parallel
-    {
-      TRandom3* gRandom = new TRandom3(0); 
-      
+    TRandom3* gRandom = new TRandom3(0); 
+    
 #pragma omp for
-      for(int mol = 0; mol < N_molecules; mol++){
+    for(int mol = 0; mol < N_molecules; mol++){
 	pop[mol] -> Mutate(iter, m0, alpha, flag[mol], gRandom);
       }
       
       delete gRandom;
-      
     }
     
     
