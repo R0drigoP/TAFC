@@ -473,4 +473,3 @@ void molecula::Mating_Plano3(molecula* mom, molecula* dad){
   cout << "-------------"<<endl;*/
 
 }
-

@@ -1,0 +1,4 @@
+Tarefas
+-Otimização local, mutação adaptativa, calcular forças
+ou
+-usar gsl, multidimensional minimization, derivada da energia em relaçao às coordenadas
