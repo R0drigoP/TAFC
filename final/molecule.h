@@ -1,6 +1,10 @@
 #ifndef __molecule__
 #define __molecule__
 
+#include "nr3.h"
+//#include "mins.h"
+//#include "mins_ndim.h"
+
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
@@ -11,6 +15,7 @@
 #include "TRandom3.h"
 
 #include "global.h"
+//#include "mins_ndim.h"
 
 using namespace std;
 
