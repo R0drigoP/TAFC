@@ -11,8 +11,8 @@ using namespace std;
 
 //global variables
 unsigned int N_molecules = 1000, N_atoms = 38;
-float L_box = 15., survival_rate = 0.25, mutation_prob = 0.05, sex_prob = 0.3;
-float alpha = 5e-3, m0 = 0.3;
+float L_box = 3., survival_rate = 0.1, mutation_prob = 0.1, sex_prob = 0.3;
+float alpha = 5e-2, m0 = 0.3;
 unsigned int max_iter = 10000;
 
 
@@ -98,12 +98,12 @@ int main(){
         text_file << endl;
       }
     }
-    else if(iter+1 % 1000 == 0){
+    else if(iter % 1000 == 0){
       movie_file << "frame" << endl;
       double** best_pos = pop[0]->Get_Pos();
       for(int i = 0; i < N_atoms; ++i){
         for(int j = 0; j < 3; ++j)
-          movie_file << best_pos[i][j]/L_box << " ";
+          movie_file << best_pos[i][j] << " ";
       }
       movie_file << endl << endl;
 
