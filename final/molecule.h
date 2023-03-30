@@ -1,7 +1,7 @@
 #ifndef __molecule__
 #define __molecule__
 
-#include "nr3.h"
+//#include "nr3.h"
 //#include "mins.h"
 //#include "mins_ndim.h"
 

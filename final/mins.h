@@ -173,7 +173,9 @@ struct Brent : Bracketmethod {
 				}
 			}
 		}
-		throw("Too many iterations in brent");
+		//call("Too many iterations in brent");
+		cout<<"Too many iterations in brent"<<endl;
+		exit(1);
 	}
 };
 struct Dbrent : Bracketmethod {
@@ -260,6 +262,8 @@ struct Dbrent : Bracketmethod {
 				}
 			}
 		}
-		throw("Too many iterations in routine dbrent");
+		//call("Too many iterations in routine dbrent");
+		cout<<"Too many iterations in routine dbrent"<<endl;
+		exit(1);
 	}
 };

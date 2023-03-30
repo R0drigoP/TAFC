@@ -1,3 +1,7 @@
+#include "nr3.h"
+#include "mins.h"
+#include "mins_ndim.h"
+
 #include "molecule.h"
 #include "TGraph.h"
 #include "TCanvas.h"
@@ -6,14 +10,15 @@
 #include <ctime>
 #include <fstream>
 #include "global.h"
+//
 
 using namespace std;
 
 //global variables
-unsigned int N_molecules = 1000, N_atoms = 38;
-float L_box = 15., survival_rate = 0.25, mutation_prob = 0.05, sex_prob = 0.3;
-float alpha = 5e-3, m0 = 0.3;
-unsigned int max_iter = 10000;
+unsigned int N_molecules = 100, N_atoms = 13;
+float L_box = 2., survival_rate = 0.1, mutation_prob = 0.1, sex_prob = 0.3;
+float alpha = 0, m0 = 0.3;
+unsigned int max_iter = 40000;
 
 
 unsigned int parents_nb = int(survival_rate * N_molecules);

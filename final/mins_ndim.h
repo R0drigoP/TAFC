@@ -132,7 +132,11 @@ struct Powell : Linemethod<T> {
 			if (2.0*(fp-fret) <= ftol*(abs(fp)+abs(fret))+TINY) {
 				return p;
 			}
-			if (iter == ITMAX) throw("powell exceeding maximum iterations.");
+			if (iter == ITMAX){
+				//call("powell exceeding maximum iterations.");
+				cout<<"powell exceeding maximum iterations."<<endl;
+				exit(1);
+			} 
 			for (Int j=0;j<n;j++) {
 				ptt[j]=2.0*p[j]-pt[j];
 				xi[j]=p[j]-pt[j];
@@ -207,6 +211,8 @@ struct Frprmn : Linemethod<T> {
 				xi[j]=h[j]=g[j]+gam*h[j];
 			}
 		}
-		throw("Too many iterations in frprmn");
+		//call("Too many iterations in frprmn");
+		cout<<"Too many iterations in frprmn"<<endl;
+		exit(1);
 	}
 };

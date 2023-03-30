@@ -65,8 +65,8 @@ inline void SWAP(T &a, T &b)
 // exception handling
 
 #ifndef _USENRERRORCLASS_
-#define throw(message) \
-{printf("ERROR: %s\n     in file %s at line %d\n", message,__FILE__,__LINE__); throw(1);}
+#define call(message) \
+{printf("ERROR: %s\n     in file %s at line %d\n", message,__FILE__,__LINE__); call(1);}
 #else
 struct NRerror {
 	char *message;
@@ -74,7 +74,7 @@ struct NRerror {
 	int line;
 	NRerror(char *m, char *f, int l) : message(m), file(f), line(l) {}
 };
-#define throw(message) throw(NRerror(message,__FILE__,__LINE__));
+#define call(message) call(NRerror(message,__FILE__,__LINE__));
 void NRcatch(NRerror err) {
 	printf("ERROR: %s\n     in file %s at line %d\n",
 		err.message, err.file, err.line);
@@ -169,7 +169,9 @@ inline T & NRvector<T>::operator[](const int i)	//subscripting
 {
 #ifdef _CHECKBOUNDS_
 if (i<0 || i>=nn) {
-	throw("NRvector subscript out of bounds");
+	//call("NRvector subscript out of bounds");
+	cout<<"NRvector subscript out of bounds"<<endl;
+	exit(1);
 }
 #endif
 	return v[i];
@@ -180,7 +182,9 @@ inline const T & NRvector<T>::operator[](const int i) const	//subscripting
 {
 #ifdef _CHECKBOUNDS_
 if (i<0 || i>=nn) {
-	throw("NRvector subscript out of bounds");
+	//call("NRvector subscript out of bounds");
+	cout<<"NRvector subscript out of bounds"<<endl;
+	exit(1);
 }
 #endif
 	return v[i];
@@ -314,7 +318,9 @@ inline T* NRmatrix<T>::operator[](const int i)	//subscripting: pointer to row i
 {
 #ifdef _CHECKBOUNDS_
 if (i<0 || i>=nn) {
-	throw("NRmatrix subscript out of bounds");
+	//call("NRmatrix subscript out of bounds");
+	cout<<"NRmatrix subscript out of bounds"<<endl;
+	exit(1);
 }
 #endif
 	return v[i];
@@ -325,7 +331,9 @@ inline const T* NRmatrix<T>::operator[](const int i) const
 {
 #ifdef _CHECKBOUNDS_
 if (i<0 || i>=nn) {
-	throw("NRmatrix subscript out of bounds");
+	//call("NRmatrix subscript out of bounds");
+	cout<<"NRmatrix subscript out of bounds"<<endl;
+	exit(1);
 }
 #endif
 	return v[i];
