@@ -1,3 +1,7 @@
+//#include "nr3.h"
+//#include "mins.h"
+//#include "mins_ndim.h"
+
 #include "molecula.h"
 #include "TGraph.h"
 #include "TCanvas.h"
@@ -129,9 +133,9 @@ int main(){
       //cout<<"nb of mutations "<<nb_of_calls_mute<<endl;
       //cout<<"nb of mat plano "<<nb_of_calls_mat_plano<<endl;
       //cout<<"nb of mat       "<<nb_of_calls_mat<<endl;
-      cout<<"pop x iter      "<<N_moleculas*(iter+1)<<endl;
-      cout<<"total reproduti "<<nb_of_calls_mute+nb_of_calls_mat_plano+nb_of_calls_mat<<endl;
-      cout<<"nb of func calss"<<nb_of_calls<<endl;
+      //cout<<"pop x iter      "<<N_moleculas*(iter+1)<<endl;
+      //cout<<"total reproduti "<<nb_of_calls_mute+nb_of_calls_mat_plano+nb_of_calls_mat<<endl;
+      //cout<<"nb of func calss"<<nb_of_calls<<endl;
 
     }
     
