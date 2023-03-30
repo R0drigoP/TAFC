@@ -1,3 +1,7 @@
+#include "nr3.h"
+#include "mins.h"
+#include "mins_ndim.h"
+
 #include "molecule.h"
 #include "TGraph.h"
 #include "TCanvas.h"
@@ -6,6 +10,7 @@
 #include <ctime>
 #include <fstream>
 #include "global.h"
+//
 
 using namespace std;
 
@@ -15,20 +20,60 @@ float L_box = 3., survival_rate = 0.1, mutation_prob = 0.1, sex_prob = 0.3;
 float alpha = 5e-2, m0 = 0.3;
 unsigned int max_iter = 10000;
 
-
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
 //int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 0;
+bool mating = 1;
 
 unsigned int nb_of_calls = 0, nb_of_calls_mute = 0, nb_of_calls_mat = 0, nb_of_calls_mat_plano = 0;
 
 double final_fit = 0.;
 
+struct Funcd {
+  
+    Funcd(){}
+
+    Doub operator() (VecDoub_I &x) {
+      Doub f = 0.;
+      for (int i = 0; i < N_atoms-1; ++i){
+          for(int j = i+1; j < N_atoms; ++j){
+              // Calculate radius
+              Doub r = 0.;
+              for(int k = 0; k < 3; ++k)
+                  r += (x[i*3+k] - x[j*3+k])*(x[i*3+k] - x[j*3+k]);
+              r = sqrt(r);
+
+              f += 4*( pow(1./r, 12) - pow(1./r, 6) );
+          }
+      }
+      return f;
+    }
+
+    void df(VecDoub_I &x, VecDoub_O &deriv) {
+
+        for (int i = 0; i < N_atoms-1; ++i){
+            for(int j = i+1; j < N_atoms; ++j){
+                // Calculate radius
+                Doub r = 0.;
+                for(int k = 0; k < 3; ++k)
+                    r += (x[i*3+k] - x[j*3+k])*(x[i*3+k] - x[j*3+k]);
+                r = sqrt(r);
+
+                // Calculate force and add to deriv
+                Doub force = -24*( 2*pow(1./r, 13) - pow(1./r, 7) );
+                for(int k = 0; k < 3; ++k){
+                    deriv[i*3+k] += force*(x[i*3+k] - x[j*3+k]);
+                    deriv[j*3+k] += force*(x[j*3+k] - x[i*3+k]);
+                }
+            }
+        }
+    }
+};
 
 //probability of each molecule to be a parent
 int main(){
+  cout << "ola1 " << endl;
 
   if(mating==1 &&  N_molecules * survival_rate < 2.){
     cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
@@ -40,7 +85,6 @@ int main(){
     cout << "Check your survival_rate" << endl;
     return 1;
   }
-
 
   double **positions;
   positions = new double*[N_atoms];
@@ -61,7 +105,6 @@ int main(){
   //population of molecules
   vector<molecule*> pop(N_molecules);
 
-
   for(int i = 0; i < N_molecules; ++i)
     pop[i] = new molecule(N_atoms, L_box, mutation_prob);
  
@@ -69,6 +112,10 @@ int main(){
   // is_parent[i] == 1 : True: Molecule i is not a parent
   //bool *is_parent = new bool[N_moleculas];
   //int *parent_order = new int[couples_nb*2];
+
+  Funcd funcd;
+  Frprmn<Funcd> frprmn(funcd);
+  VecDoub p(3*N_atoms);
 
   for(int iter = 0; iter < max_iter; iter++){
 
@@ -86,8 +133,6 @@ int main(){
     //cout<<"got potential"<<endl;
 
     sort(pop.begin(), pop.end(), molecule::LessPot);
-
-    //cout<<"sorted"<<endl;
 
     if(iter == 0){
       double** best_pos = pop[0]->Get_Pos();
@@ -161,8 +206,10 @@ int main(){
       
       delete gRandom;
     }
-    
-    
+
+
+    cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
       final_fit =  pop[0]-> Get_Fit();
@@ -173,7 +220,32 @@ int main(){
     }
     
   }
+
+  positions = (pop[0] -> Get_Pos());
+    
+    //so podemos fazer isto quando encontrarmos o max global
+    for(int i = 0; i < N_atoms; i++ )
+      for(int j = 0; j < 3; j++){
+        //cout << "ola" << i+5 << endl;
+        p[i*3+j] = positions[i][j];
+      }
+
   
+  pop[0] -> Fit();
+
+  cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+
+  p = frprmn.minimize(p);
+
+  for(int i = 0; i < N_atoms; i++ )
+    for(int j = 0; j < 3; j++)
+      positions[i][j] = p[i*3+j];
+
+  pop[0] -> Set_Pos(positions);
+
+  pop[0] -> Fit();
+
+  cout << "Pot: " << pop[0] -> Get_Fit() << endl;
   //delete[] is_parent;
   //delete[] parent_order;
   
