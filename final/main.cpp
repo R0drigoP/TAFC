@@ -1,3 +1,7 @@
+#include "nr3.h"
+#include "mins.h"
+#include "mins_ndim.h"
+
 #include "molecule.h"
 #include "TGraph.h"
 #include "TCanvas.h"
@@ -6,10 +10,12 @@
 #include <ctime>
 #include <fstream>
 #include "global.h"
+//
 
 using namespace std;
 
 //global variables
+
 unsigned int N_molecules = 1000, N_atoms = 13;
 float L_box = 2., survival_rate = 0.25, mutation_prob = 0.05, sex_prob = 0.3;
 float alpha = 0, m0 = 0.3;
@@ -109,15 +115,12 @@ int main(){
   //int *parent_order = new int[couples_nb*2];
 
   Funcd funcd;
-  cout << "ola2 " << endl;
   Frprmn<Funcd> frprmn(funcd);
-  cout << "ola3 " << endl;
   VecDoub p(3*N_atoms);
-  cout << "ola4 " << endl;
 
   for(int iter = 0; iter < max_iter; iter++){
 
-    cout << "ITER NR " << iter << endl;
+    //cout << "ITER NR " << iter << endl;
     /*
     for(int i = 0; i < N_moleculas; i++){
       cout<<"Molecula"<<i<<endl;
