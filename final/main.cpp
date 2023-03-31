@@ -6,14 +6,17 @@
 #include <ctime>
 #include <fstream>
 #include "global.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 
 //global variables
-unsigned int N_molecules = 1000, N_atoms = 13;
-float L_box = 2., survival_rate = 0.25, mutation_prob = 0.05, sex_prob = 0.3;
-float alpha = 0, m0 = 0.3;
-unsigned int max_iter = 20000;
+
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 2., survival_rate = 0.85, mutation_prob = 0.15, sex_prob = 0.3;
+float alpha = 2*10e-3, m0 = 0.3;
+unsigned int max_iter = 50000;
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
@@ -68,7 +71,6 @@ struct Funcd {
 
 //probability of each molecule to be a parent
 int main(){
-  cout << "ola1 " << endl;
 
   if(mating==1 &&  N_molecules * survival_rate < 2.){
     cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
@@ -109,26 +111,10 @@ int main(){
   //int *parent_order = new int[couples_nb*2];
 
   Funcd funcd;
-  cout << "ola2 " << endl;
   Frprmn<Funcd> frprmn(funcd);
-  cout << "ola3 " << endl;
   VecDoub p(3*N_atoms);
-  cout << "ola4 " << endl;
 
   for(int iter = 0; iter < max_iter; iter++){
-
-    cout << "ITER NR " << iter << endl;
-    /*
-    for(int i = 0; i < N_moleculas; i++){
-      cout<<"Molecula"<<i<<endl;
-      positions = pop[i] -> Get_Pos();
-        cout << "Atomo " << 0 << " : " <<positions[0][0] << ", " << positions[0][1] << ", " << positions[0][2] << endl;
-        cout << "Atomo " << 1 << " : " <<positions[1][0] << ", " << positions[1][1] << ", " << positions[1][2] << endl;
-        cout << "Atomo " << 2 << " : " <<positions[2][0] << ", " << positions[2][1] << ", " << positions[2][2] << endl;
-
-      }*/
-
-    //cout<<"got potential"<<endl;
 
     sort(pop.begin(), pop.end(), molecule::LessPot);
 
@@ -206,7 +192,11 @@ int main(){
     }
 
 
-    cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+    if(iter%400 == 0){
+      cout << "ITER NR " << iter << endl;
+      cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+    }
+
 
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
@@ -224,7 +214,6 @@ int main(){
     //so podemos fazer isto quando encontrarmos o max global
     for(int i = 0; i < N_atoms; i++ )
       for(int j = 0; j < 3; j++){
-        //cout << "ola" << i+5 << endl;
         p[i*3+j] = positions[i][j];
       }
 

@@ -14,8 +14,8 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
     positions[i][j] = gRandom -> Uniform(0., l_box);
-  
-}
+  }
+
   delete gRandom;
 
   this->Fit();
@@ -59,10 +59,8 @@ void molecule::Fit(){
       f += 4*( pow(1./r, 12) - pow(1./r, 6) );
     }
   }
-  
   fitness = f;
 }
-
 
 //Setters
 
@@ -90,8 +88,8 @@ void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRando
       double x0 = gRandom->Uniform(-1,1)*m0*L_box;
       double mutation = x0/(1+alpha*iter);
       positions[atom_to_mutate][i] += mutation;
-      if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
-        positions[atom_to_mutate][i] -= 2*mutation;
+      /*if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
+        positions[atom_to_mutate][i] -= 2*mutation;*/
     }
     this->Fit();
   }
