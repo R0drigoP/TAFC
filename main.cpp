@@ -7,22 +7,23 @@
 #include <fstream>
 #include "global.h"
 
+
 using namespace std;
 
 //global variables
 int N_moleculas = 100;
 int N_atomos = 13;
-int dim_caixa = 1;
+int dim_caixa = 2;
 double survival_rate = 0.1;
 double mutation_prob = 0.10;
 double sex_prob = 0.3;
-int max_iter = 1000;
+int max_iter = 10000;
 
 int parents_nb = int(survival_rate * N_moleculas );
 //int couples_nb = int(parents_nb/2);
 //int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 1;
+bool mating = 0;
 
 int nb_of_calls = 0;
 int nb_of_calls_mute = 0;
@@ -35,6 +36,8 @@ double final_pot =0;
 
 //probability of each molecule to be a parent
 int main(){
+
+  cout << "olaaa" << endl;
 
 
   if(mating==1 &&  N_moleculas * survival_rate < 2){
