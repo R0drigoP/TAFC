@@ -1,20 +1,23 @@
 #ifndef __molecule__
 #define __molecule__
 
-#include <cstdio>
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
 #include <cmath>
 #include <vector>
-
 #include "TRandom3.h"
-
 #include "global.h"
+#include "nr3.h"
+#include "mins.h"
+#include "mins_ndim.h"
 
 using namespace std;
 
 class molecule{
+
 public:
 
   //Constructors and Destructor
@@ -22,10 +25,13 @@ public:
   molecule(molecule* mom, molecule* dad, double gene_prop, unsigned int n_atoms = 0);
   ~molecule();
 
+  //Fitness
+  void Fit();
+  
   //Getters
   int Get_Natoms() {return N_atoms;}
   int Get_Dim() {return L_box;}
-  double** Get_Pos() {return positions;}
+  double** Get_Pos() const {return positions;}
   double Get_Fit() {return fitness;}
 
   //Setters
@@ -47,7 +53,6 @@ private:
   double **positions;
   double fitness;
 
-  void Fit();
 };
 
 #endif
