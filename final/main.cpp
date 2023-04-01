@@ -10,16 +10,20 @@
 #include <ctime>
 #include <fstream>
 #include "global.h"
+
+#include <omp.h>
+
+
 //
 
 using namespace std;
 
 //global variables
 
-unsigned int N_molecules = 1000, N_atoms = 13;
-float L_box = 2., survival_rate = 0.25, mutation_prob = 0.05, sex_prob = 0.3;
+unsigned int N_molecules = 100, N_atoms = 38;
+float L_box = 6., survival_rate = 0.6, mutation_prob = 0.1, sex_prob = 0.3;
 float alpha = 0, m0 = 0.3;
-unsigned int max_iter = 20000;
+unsigned int max_iter = 2000000;
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
@@ -74,7 +78,7 @@ struct Funcd {
 
 //probability of each molecule to be a parent
 int main(){
-  cout << "ola1 " << endl;
+  double t0 = omp_get_wtime();
 
   if(mating==1 &&  N_molecules * survival_rate < 2.){
     cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
@@ -209,7 +213,7 @@ int main(){
     }
 
 
-    cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+    //cout << "Pot: " << pop[0] -> Get_Fit() << endl;
 
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
@@ -281,6 +285,10 @@ int main(){
 
 
   cout<<"Total pot calls: "<<nb_of_calls<<endl;
-  
+
+  double t1 = omp_get_wtime();
+  printf("\n");
+  printf("Number of threads   =  %i\n", omp_get_max_threads());
+  printf("Computation time    =  %f ms\n", (t1-t0) * 1000);  
   return 0;
 }

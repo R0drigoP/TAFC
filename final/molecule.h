@@ -27,6 +27,9 @@ public:
   molecule(molecule* mom, molecule* dad, double gene_prop, unsigned int n_atoms = 0);
   ~molecule();
 
+  //fitness
+  void Fit();
+
   //Getters
   int Get_Natoms() {return N_atoms;}
   int Get_Dim() {return L_box;}
@@ -46,13 +49,15 @@ public:
   void Mating(molecule* mom, molecule* dad, double gene_prop = 0.);
   void Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom);
 
+
+
 private:
   unsigned int N_atoms;
   float mutation_prob, L_box;
   double **positions;
   double fitness;
 
-  void Fit();
+  
 };
 
 #endif
