@@ -127,21 +127,59 @@ int main(){
 
   for(int iter = 0; iter < max_iter; iter++){
 
-    //cout << "ITER NR " << iter << endl;
-    /*
-    for(int i = 0; i < N_moleculas; i++){
-      cout<<"Molecula"<<i<<endl;
-      positions = pop[i] -> Get_Pos();
-        cout << "Atomo " << 0 << " : " <<positions[0][0] << ", " << positions[0][1] << ", " << positions[0][2] << endl;
-        cout << "Atomo " << 1 << " : " <<positions[1][0] << ", " << positions[1][1] << ", " << positions[1][2] << endl;
-        cout << "Atomo " << 2 << " : " <<positions[2][0] << ", " << positions[2][1] << ", " << positions[2][2] << endl;
 
-      }*/
+    //REPRODUCTION 
 
-    //cout<<"got potential"<<endl;
+    #pragma omp parallel
+    {
+      //---sexual reproduction
+      if( mating == 1){
 
+       
+        for(int i = 0 ; i < parents_nb; i++)
+          flag[i] = 0; //setting flag to 0 for parents
+
+        TRandom3* gRandom = new TRandom3(0); 
+
+
+        #pragma omp for
+        for(int i = parents_nb ; i <N_molecules; i++)
+          flag[i] = pop[i]->generate_children3(pop, gRandom);
+
+        delete gRandom;
+      }
+
+      //---assexual reproduction
+
+      TRandom3* gRandom = new TRandom3(0); 
+      #pragma omp for
+      for(int mol = 0; mol < N_molecules; mol++)
+        pop[mol] -> Mutate(iter, m0, alpha, flag[mol], gRandom);
+      
+      delete gRandom;
+
+    }
+
+    //sort population
     sort(pop.begin(), pop.end(), molecule::LessPot);
 
+    //matar os mais fracos e fazer copias da melhor pop (se calhar atribuir alguma aleatoriadade a este processo)
+    #pragma omp parallel
+    {
+      #pragma omp for
+      for(int mol = static_cast<int>(survival_rate*N_molecules); mol < N_molecules; mol += static_cast<int>(survival_rate*N_molecules)){
+        int alive = 0;
+        while(alive < survival_rate*N_molecules && (mol+alive)<N_molecules){
+        //cout<<mol<<" "<<alive<<endl;                          
+          pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
+          pop[mol+alive] -> Set_Fit(pop[alive] -> Get_Fit());
+
+          ++alive;
+        }
+      }
+    }
+
+    //print to movie file
     if(iter == 0){
       double** best_pos = pop[0]->Get_Pos();
       for(int i = 0; i < N_atoms; ++i){
@@ -159,89 +197,26 @@ int main(){
           movie_file << best_pos[i][j] << " ";
       }
       movie_file << endl << endl;
-
-      //cout << "ITER NR " << iter << endl;
-
-      //cout << "Pot so far " << pop[0]->Get_Fit() << endl;
-
-      //cout<<"nb of mutations "<<nb_of_calls_mute<<endl;
-      //cout<<"nb of mat plano "<<nb_of_calls_mat_plano<<endl;
-      //cout<<"nb of mat       "<<nb_of_calls_mat<<endl;
-      //cout<<"pop x iter      "<<N_molecules*(iter+1)<<endl;
-      //cout<<"total reproduti "<<nb_of_calls_mute+nb_of_calls_mat_plano+nb_of_calls_mat<<endl;
-      //cout<<"nb of func calss"<<nb_of_calls<<endl;
-
     }
     
     gr -> AddPoint( iter, pop[0] -> Get_Fit());
- 
-    //matar os mais fracos -> fazer copias da melhor pop (se calhar atribuir alguma aleatoriadade a este processo)
-#pragma omp parallel
-    {
-#pragma omp for
-    for(int mol = static_cast<int>(survival_rate*N_molecules); mol < N_molecules; mol += static_cast<int>(survival_rate*N_molecules)){              
-      int alive = 0;
-      while(alive < survival_rate*N_molecules && (mol+alive)<N_molecules){
-        //cout<<mol<<" "<<alive<<endl;                          
-        pop[mol+alive] -> Set_Pos(pop[alive] -> Get_Pos());
-        pop[mol+alive] -> Set_Fit(pop[alive] -> Get_Fit());
-	
-        ++alive;
-      }
-    }
-    
-    if( mating == 1){
-      //setting flag to 0 for parents
-      for(int i = 0 ; i < parents_nb; i++)
-        flag[i] = 0;
-      
-      //sexual reproduction
-      TRandom3* gRandom = new TRandom3(0); 
-#pragma omp for
-      for(int i = parents_nb ; i <N_molecules; i++)
-	flag[i] = pop[i]->generate_children3(pop, gRandom);
-      
-      delete gRandom;
-    }
-    
-    //assexual reproduction
-    TRandom3* gRandom = new TRandom3(0); 
-    
-#pragma omp for
-    for(int mol = 0; mol < N_molecules; mol++){
-	pop[mol] -> Mutate(iter, m0, alpha, flag[mol], gRandom);
-      }
-      
-      delete gRandom;
-    }
 
-
-    //cout << "Pot: " << pop[0] -> Get_Fit() << endl;
-
+    //prints
     if(iter%1000 == 0){
       cout << "ITER NR " << iter << endl;
       cout << "Pot: " << pop[0] -> Get_Fit() << endl;
     }
-
-
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
       final_fit =  pop[0]-> Get_Fit();
       cout << "Final Pot " << final_fit << endl;
-      
-      //for(int i = 0; i < N_atomos; i++)
-      //cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
     }
-    
-  }
+  }//closing iterations loop
 
   positions = (pop[0] -> Get_Pos());
-    
-    //so podemos fazer isto quando encontrarmos o max global
-    for(int i = 0; i < N_atoms; i++ )
-      for(int j = 0; j < 3; j++){
-        p[i*3+j] = positions[i][j];
-      }
+  for(int i = 0; i < N_atoms; i++ )
+    for(int j = 0; j < 3; j++)
+      p[i*3+j] = positions[i][j];
 
   
   pop[0] -> Fit();
@@ -259,8 +234,7 @@ int main(){
   pop[0] -> Fit();
 
   cout << "Pot: " << pop[0] -> Get_Fit() << endl;
-  //delete[] is_parent;
-  //delete[] parent_order;
+
   
   for(int i = 0; i < 3; ++i) 
     delete[] positions[i];
@@ -281,7 +255,7 @@ int main(){
 	    << endl << "scale 100"
 	    << endl << "inc 5.0" <<endl<< flush;
   
-  
+
   c1 -> cd();
   gr->GetHistogram()->SetMaximum(-0.1*final_fit);
   gr->GetHistogram()->SetMinimum(1.01*final_fit);
