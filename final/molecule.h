@@ -1,10 +1,8 @@
 #ifndef __molecule__
 #define __molecule__
 
-//#include "nr3.h"
-//#include "mins.h"
-//#include "mins_ndim.h"
-
+#include "TRandom3.h"
+#include "global.h"
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
@@ -12,14 +10,10 @@
 #include <cmath>
 #include <vector>
 
-#include "TRandom3.h"
-
-#include "global.h"
-//#include "mins_ndim.h"
-
 using namespace std;
 
 class molecule{
+
 public:
 
   //Constructors and Destructor
@@ -29,6 +23,8 @@ public:
 
   //fitness
   void Fit();
+
+
 
   //Getters
   int Get_Natoms() {return N_atoms;}
@@ -56,8 +52,6 @@ private:
   float mutation_prob, L_box;
   double **positions;
   double fitness;
-
-  
 };
 
 #endif

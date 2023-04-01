@@ -2,3 +2,50 @@ Tarefas
 -Otimização local, mutação adaptativa, calcular forças
 ou
 -usar gsl, multidimensional minimization, derivada da energia em relaçao às coordenadas
+
+
+Juna
+//13 atomos
+- dim = 2
+
+
+//38atomos
+mating = 1, acho que o mating ajuda
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 3., survival_rate = 0.45, mutation_prob = 0.05, sex_prob = 0.3;
+float alpha = 10e-3, m0 = 0.3;
+unsigned int max_iter = 5000;
+
+
+Pot = -164.552
+
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 2.5, survival_rate = 0.45, mutation_prob = 0.05, sex_prob = 0.3;
+float alpha = 10e-3, m0 = 0.3;
+unsigned int max_iter = 5000;
+
+Pot = -165.29
+
+(Para caixas menores pior)
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 1.5, survival_rate = 0.85, mutation_prob = 0.15, sex_prob = 0.3;
+float alpha = 10e-3, m0 = 0.3;
+unsigned int max_iter = 10000;
+
+Pot = -166.754
+
+(Ainda podia descer mais, aumentar iteraçoes)
+
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 1.5, survival_rate = 0.85, mutation_prob = 0.15, sex_prob = 0.3;
+float alpha = 10e-3, m0 = 0.3;
+unsigned int max_iter = 30000;
+
+Pot: -166.907
+
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 2., survival_rate = 0.85, mutation_prob = 0.15, sex_prob = 0.3;
+float alpha = 2*10e-3, m0 = 0.3;
+unsigned int max_iter = 30000;
+
+Pot =  -167.144

@@ -237,6 +237,7 @@ double molecula::Potencial(){
   return f_value;
 }
 
+
 void molecula::OtherPotential(){
   float sigma = 1; //(Angstroms)
   float epsilon = 1; //(kJ/mol)

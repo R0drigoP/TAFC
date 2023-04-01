@@ -20,10 +20,12 @@ using namespace std;
 
 //global variables
 
-unsigned int N_molecules = 100, N_atoms = 38;
-float L_box = 6., survival_rate = 0.6, mutation_prob = 0.1, sex_prob = 0.3;
-float alpha = 0, m0 = 0.3;
-unsigned int max_iter = 2000000;
+
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 2., survival_rate = 0.85, mutation_prob = 0.15, sex_prob = 0.3;
+float alpha = 2*10e-3, m0 = 0.3;
+unsigned int max_iter = 5000;
+
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
@@ -78,6 +80,7 @@ struct Funcd {
 
 //probability of each molecule to be a parent
 int main(){
+
   double t0 = omp_get_wtime();
 
   if(mating==1 &&  N_molecules * survival_rate < 2.){
@@ -148,12 +151,12 @@ int main(){
         text_file << endl;
       }
     }
-    else if(iter+1 % 1000 == 0){
+    else if(iter % 1000 == 0){
       movie_file << "frame" << endl;
       double** best_pos = pop[0]->Get_Pos();
       for(int i = 0; i < N_atoms; ++i){
         for(int j = 0; j < 3; ++j)
-          movie_file << best_pos[i][j]/L_box << " ";
+          movie_file << best_pos[i][j] << " ";
       }
       movie_file << endl << endl;
 
@@ -215,6 +218,12 @@ int main(){
 
     //cout << "Pot: " << pop[0] -> Get_Fit() << endl;
 
+    if(iter%1000 == 0){
+      cout << "ITER NR " << iter << endl;
+      cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+    }
+
+
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
       final_fit =  pop[0]-> Get_Fit();
@@ -231,7 +240,6 @@ int main(){
     //so podemos fazer isto quando encontrarmos o max global
     for(int i = 0; i < N_atoms; i++ )
       for(int j = 0; j < 3; j++){
-        //cout << "ola" << i+5 << endl;
         p[i*3+j] = positions[i][j];
       }
 
@@ -268,10 +276,10 @@ int main(){
   double atom_size = 0.1/L_box;
   
   text_file << endl << "spec C 0.1 Red" << endl
-	    << endl << "bonds C C 0.5 1.5 0.01 0.0"
+	    << endl << "bonds C C 0.3 1.0 0.01 0.0"
 	    << endl << "bonds C H 0.4 1.0 0.01 1.0"
 	    << endl << "scale 100"
-	    << endl << "inc 5.0" << flush;
+	    << endl << "inc 5.0" <<endl<< flush;
   
   c1 -> cd();
   gr->GetHistogram()->SetMaximum(-0.1*final_fit);
