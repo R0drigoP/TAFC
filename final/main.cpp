@@ -1,3 +1,7 @@
+#include "nr3.h"
+#include "mins.h"
+#include "mins_ndim.h"
+
 #include "molecule.h"
 #include "TGraph.h"
 #include "TCanvas.h"
@@ -6,8 +10,7 @@
 #include <ctime>
 #include <fstream>
 #include "global.h"
-#include <stdio.h>
-#include <stdlib.h>
+//
 
 using namespace std;
 
@@ -116,6 +119,19 @@ int main(){
 
   for(int iter = 0; iter < max_iter; iter++){
 
+    //cout << "ITER NR " << iter << endl;
+    /*
+    for(int i = 0; i < N_moleculas; i++){
+      cout<<"Molecula"<<i<<endl;
+      positions = pop[i] -> Get_Pos();
+        cout << "Atomo " << 0 << " : " <<positions[0][0] << ", " << positions[0][1] << ", " << positions[0][2] << endl;
+        cout << "Atomo " << 1 << " : " <<positions[1][0] << ", " << positions[1][1] << ", " << positions[1][2] << endl;
+        cout << "Atomo " << 2 << " : " <<positions[2][0] << ", " << positions[2][1] << ", " << positions[2][2] << endl;
+
+      }*/
+
+    //cout<<"got potential"<<endl;
+
     sort(pop.begin(), pop.end(), molecule::LessPot);
 
     if(iter == 0){
@@ -127,12 +143,12 @@ int main(){
         text_file << endl;
       }
     }
-    else if(iter+1 % 1000 == 0){
+    else if(iter % 1000 == 0){
       movie_file << "frame" << endl;
       double** best_pos = pop[0]->Get_Pos();
       for(int i = 0; i < N_atoms; ++i){
         for(int j = 0; j < 3; ++j)
-          movie_file << best_pos[i][j]/L_box << " ";
+          movie_file << best_pos[i][j] << " ";
       }
       movie_file << endl << endl;
 

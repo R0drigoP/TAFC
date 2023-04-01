@@ -1,18 +1,14 @@
 #ifndef __molecule__
 #define __molecule__
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "TRandom3.h"
+#include "global.h"
+#include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
 #include <cmath>
 #include <vector>
-#include "TRandom3.h"
-#include "global.h"
-#include "nr3.h"
-#include "mins.h"
-#include "mins_ndim.h"
 
 using namespace std;
 
@@ -31,7 +27,7 @@ public:
   //Getters
   int Get_Natoms() {return N_atoms;}
   int Get_Dim() {return L_box;}
-  double** Get_Pos() const {return positions;}
+  double** Get_Pos() {return positions;}
   double Get_Fit() {return fitness;}
 
   //Setters

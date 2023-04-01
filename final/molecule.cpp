@@ -85,8 +85,11 @@ void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRando
     nb_of_calls_mute ++;
     int atom_to_mutate = (int)gRandom->Uniform(0, N_atoms);
     for(int i=0; i<3; ++i){
+      
       double x0 = gRandom->Uniform(-1,1)*m0*L_box;
+
       double mutation = x0/(1+alpha*iter);
+
       positions[atom_to_mutate][i] += mutation;
       /*if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
         positions[atom_to_mutate][i] -= 2*mutation;*/
