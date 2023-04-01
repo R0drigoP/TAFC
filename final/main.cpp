@@ -281,6 +281,7 @@ int main(){
 	    << endl << "scale 100"
 	    << endl << "inc 5.0" <<endl<< flush;
   
+  
   c1 -> cd();
   gr->GetHistogram()->SetMaximum(-0.1*final_fit);
   gr->GetHistogram()->SetMinimum(1.01*final_fit);
