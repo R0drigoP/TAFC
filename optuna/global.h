@@ -1,3 +1,8 @@
+inline float alpha = 0;
+inline float m0 = 0.3;
+inline unsigned int max_iter = 5000;
+
+
 extern unsigned int parents_nb;
 
 //nb of calls to the function that calculates the potential

@@ -9,7 +9,7 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
   for (int i = 0; i < n_atoms; i++)
     positions[i] = new double[3];
   
-  gRandom = new TRandom3(0);
+  gRandom = new TRandom3(seed = 42);
   
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
