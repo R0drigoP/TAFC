@@ -1,6 +1,8 @@
 inline float alpha = 0;
-inline float m0 = 0.3;
-inline unsigned int max_iter = 5000;
+//inline float m0 = 0.3;
+inline unsigned int max_iter = 300000;
+inline unsigned int N_molecules = 600;
+inline float L_box = 3.;
 
 
 extern unsigned int parents_nb;

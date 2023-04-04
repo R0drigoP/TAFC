@@ -21,17 +21,17 @@ using namespace std;
 //global variables
 
 
-unsigned int N_molecules = 400, N_atoms = 38;
-float L_box = 3., survival_rate = 0.90, mutation_prob = 0.01, sex_prob = 0.20;
-float alpha = 2*10e-4, m0 = 0.3;
-unsigned int max_iter = 30000;
+unsigned int N_molecules = 100, N_atoms = 13;
+float L_box = 2., survival_rate = 0.90, mutation_prob = 0.15, sex_prob = 0.5;
+float alpha = 0., m0 = 0.1;
+unsigned int max_iter = 60000;
 
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
 //int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 1;
+bool mating = 0;
 
 unsigned int nb_of_calls = 0, nb_of_calls_mute = 0, nb_of_calls_mat = 0, nb_of_calls_mat_plano = 0;
 
@@ -250,7 +250,7 @@ int main(){
   double atom_size = 0.1/L_box;
   
   text_file << endl << "spec C 0.1 Red" << endl
-	    << endl << "bonds C C 0.3 1.0 0.01 0.0"
+	    << endl << "bonds C C 0.3 1.5 0.01 0.0"
 	    << endl << "bonds C H 0.4 1.0 0.01 1.0"
 	    << endl << "scale 100"
 	    << endl << "inc 5.0" <<endl<< flush;

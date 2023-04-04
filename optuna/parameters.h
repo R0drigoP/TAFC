@@ -1,6 +1,6 @@
-inline unsigned int N_molecules = 835;
-inline float L_box = 8.384420279051051;
-inline float survival_rate = 0.6298648966192016;
-inline float mutation_prob = 0.3566521157107556;
-inline float sex_prob = 0.01627419919646339;
-inline bool mating = 0;
+inline float survival_rate = 0.6256523220791484;
+inline float mutation_prob = 0.13097643052183108;
+inline float sex_prob = 0.32366121523402336;
+inline bool mating = 1;
+inline float m0 = 0.7469731233806065;
+inline float m_mat = 0.7573922098271576;

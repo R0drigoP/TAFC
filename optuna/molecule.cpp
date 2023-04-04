@@ -9,7 +9,7 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
   for (int i = 0; i < n_atoms; i++)
     positions[i] = new double[3];
   
-  gRandom = new TRandom3(seed = 42);
+  gRandom = new TRandom3(0);
   
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
@@ -91,39 +91,11 @@ void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRando
       double mutation = x0/(1+alpha*iter);
 
       positions[atom_to_mutate][i] += mutation;
-
+      
       //if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
       //  positions[atom_to_mutate][i] -= 2*mutation;
 
     }
-    //mutating another atom
-    check_if_mute = gRandom->Uniform(0,1);
-    if (check_if_mute < mutation_prob/2. ){
-      int atom_to_mutate2 = (int)gRandom->Uniform(0, N_atoms);
-      while(atom_to_mutate2==atom_to_mutate)
-        atom_to_mutate2 = (int)gRandom->Uniform(0, N_atoms);
-
-
-      for(int i=0; i<3; ++i){
-        double x0 = gRandom->Uniform(-1,1)*m0*L_box;
-        double mutation = x0/(1+alpha*iter);
-        positions[atom_to_mutate2][i] += mutation;
-      }
-
-      check_if_mute = gRandom->Uniform(0,1);
-      if (check_if_mute < mutation_prob/3. ){
-        int atom_to_mutate3 = (int)gRandom->Uniform(0, N_atoms);
-        while(atom_to_mutate3==atom_to_mutate2 || atom_to_mutate3==atom_to_mutate)
-          atom_to_mutate3 = (int)gRandom->Uniform(0, N_atoms);
-
-          for(int i=0; i<3; ++i){
-            double x0 = gRandom->Uniform(-1,1)*m0*L_box;
-            double mutation = x0/(1+alpha*iter);
-            positions[atom_to_mutate3][i] += mutation;
-          }
-        }
-      }
-
     this->Fit();
   }
   //se nao tiver feito mutacao calcula na mesma o potencial para os que sofreram reproducao sexuada
@@ -150,19 +122,19 @@ int molecule::generate_children3(vector<molecule*> pop, TRandom3* gRandom){
     while(dad_index==mom_index)
       dad_index = (int)gRandom->Uniform(0, parents_nb);
 
-    //double mating_type = gRandom->Uniform(0,1);
+    double mating_type = gRandom->Uniform(0,1);
 
     //call reproduction method
     //maybe add some new ones later...
-    //if(mating_type<0.9){
+    if(mating_type<m_mat){
       nb_of_calls_mat_plano ++;
       this->Mating_Plano3(pop[mom_index],pop[dad_index], gRandom);
-    //}
+    }
 
-    //else{
-    //  nb_of_calls_mat ++;
-    //  this->Mating(pop[mom_index],pop[dad_index],gRandom->Uniform(0,1));
-    //}
+    else{
+      nb_of_calls_mat ++;
+      this->Mating_Sphere(pop[mom_index],pop[dad_index],gRandom);
+    }
     
     //delete gRandom;
     return 1;
@@ -184,6 +156,132 @@ void molecule::Mating(molecule* mom, molecule* dad, double gene_prop){
     }
   }
 }
+
+void molecule::Mating_Sphere(molecule* mom, molecule* dad, TRandom3* gRandom){
+
+  double **pos_mom = mom -> Get_Pos();
+  double **pos_dad = dad -> Get_Pos();
+
+  //min number of atoms of each parent
+  const int minAtoms = 2;
+  int nAtomsMom = 0;
+  int nAtomsDad = 0;
+  double r = 0., x=0., y=0., z=0.;
+
+  int flag = 0;
+  int nr_atoms = 0;
+
+  //setting positions to 0
+  for (int i = 0; i < N_atoms; i++){
+    for (int j = 0; j < 3; j++)
+    positions[i][j] = gRandom -> Uniform(0., L_box);
+  }
+
+  //checking that there are at least 2 atoms for each parent inside the sphere
+  while (nAtomsMom <= minAtoms || nAtomsDad <= minAtoms) {
+    //randomly selecting the radius 
+    r = gRandom->Uniform(0,L_box);
+
+    //center coordinates of sphere using normal dist
+    x = gRandom->Gaus();
+    y = gRandom->Gaus();
+    z = gRandom->Gaus();
+
+    //reset to 0
+    nAtomsMom = 0;
+    nAtomsDad = 0;
+
+    //loop over atoms
+    for (int i = 0; i < N_atoms; i++){
+      double dist_mom = sqrt((pos_mom[i][0] - x)*(pos_mom[i][0] - x) + (pos_mom[i][1] - y)*(pos_mom[i][1] - y) + (pos_mom[i][1] - z)*(pos_mom[i][1] - z));
+      double dist_dad = sqrt((pos_dad[i][0] - x)*(pos_dad[i][0] - x) + (pos_dad[i][1] - y)*(pos_dad[i][1] - y) + (pos_dad[i][1] - z)*(pos_dad[i][1] - z));
+      if (dist_mom <= r) 
+        nAtomsMom++;
+      if (dist_dad <= r) 
+        nAtomsDad++;
+    }
+  }
+
+  //choose every mom atom inside sphere
+  for (int i = 0; i < N_atoms; i++){
+
+    double dist_mom = sqrt((pos_mom[i][0] - x)*(pos_mom[i][0] - x) + (pos_mom[i][1] - y)*(pos_mom[i][1] - y) + (pos_mom[i][1] - z)*(pos_mom[i][1] - z));
+
+    if(dist_mom <= r){
+      for(int j = 0; j < 3; j++)
+        positions[nr_atoms][j] = pos_mom[i][j];
+      nr_atoms ++;
+    }
+  }
+
+  //choose every dad atom outside sphere
+  for (int i = 0; i < N_atoms; i++){
+    double dist_dad = sqrt((pos_dad[i][0] - x)*(pos_dad[i][0] - x) + (pos_dad[i][1] - y)*(pos_dad[i][1] - y) + (pos_dad[i][1] - z)*(pos_dad[i][1] - z));
+    if(nr_atoms== N_atoms)
+      break;
+    else if( dist_dad > r){
+      for(int j = 0; j < 3; j++)
+        positions[nr_atoms][j] = pos_dad[i][j];
+      nr_atoms ++;
+      //cout<<"dad bellow"<<endl;
+    }
+  }
+  if (nr_atoms < N_atoms){
+    //choose every mom outside 
+    for (int i = 0; i < N_atoms; i++){
+      double dist_mom = sqrt((pos_mom[i][0] - x)*(pos_mom[i][0] - x) + (pos_mom[i][1] - y)*(pos_mom[i][1] - y) + (pos_mom[i][1] - z)*(pos_mom[i][1] - z));
+
+      if( dist_mom > r){
+        for (int k = 0; k < nr_atoms; k++){
+          flag = 0;
+          for (int j = 0; j < 3; j++){
+            if (positions[k][j]==pos_mom[i][j])
+              flag++;
+          }
+          if(flag == 3)
+            break; 
+        }
+        if (flag != 3){
+          for(int j = 0; j < 3; j++)
+            positions[nr_atoms][j] = pos_mom[i][j];
+          nr_atoms ++;
+          //cout<<"mom below"<<endl;
+        }
+      }
+      if(nr_atoms== N_atoms)
+        break;
+    }
+  }
+
+  if (nr_atoms < N_atoms){
+    //choose every dad atom above CM
+    for (int i = 0; i < N_atoms; i++){
+      double dist_dad = sqrt((pos_dad[i][0] - x)*(pos_dad[i][0] - x) + (pos_dad[i][1] - y)*(pos_dad[i][1] - y) + (pos_dad[i][1] - z)*(pos_dad[i][1] - z));
+
+      if(dist_dad <= r){
+        for (int k = 0; k < nr_atoms; k++){
+          flag = 0;
+          for (int j = 0; j < 3; j++){
+            if (positions[k][j]==pos_dad[i][j])
+              flag++;
+          }
+          if(flag == 3)
+            break; 
+        }
+        if (flag != 3){
+          for(int j = 0; j < 3; j++)
+            positions[nr_atoms][j] = pos_dad[i][j];
+          nr_atoms ++;
+          //cout<<"dad above"<<endl;
+        }
+      }
+      if(nr_atoms== N_atoms)
+        break;
+    }
+  }
+}
+
+
 
 
 void molecule::Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom){
@@ -230,15 +328,15 @@ void molecule::Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom){
         }
         if(flag == 3)
           break; 
-        }
-        if (flag != 3){
-          for(int j = 0; j < 3; j++)
-            positions[nr_atoms][j] = pos_mom[i][j];
+      }
+      if (flag != 3){
+        for(int j = 0; j < 3; j++)
+          positions[nr_atoms][j] = pos_mom[i][j];
           nr_atoms ++;
           //cout<<"mom  above"<<endl;
         }
-    } 
-  }
+      } 
+    }
 
   //choose every dad atom bellow CM
   for (int i = 0; i < N_atoms; i++){

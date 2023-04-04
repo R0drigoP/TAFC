@@ -45,6 +45,7 @@ public:
   int generate_children3(vector<molecule*> pop, TRandom3* gRandom);
   void Mating(molecule* mom, molecule* dad, double gene_prop = 0.);
   void Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom);
+  void Mating_Sphere(molecule* mom, molecule* dad, TRandom3* gRandom);
 
 
 
