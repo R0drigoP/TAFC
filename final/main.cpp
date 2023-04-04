@@ -21,10 +21,10 @@ using namespace std;
 //global variables
 
 
-unsigned int N_molecules = 1000, N_atoms = 38;
-float L_box = 2., survival_rate = 0.85, mutation_prob = 0.15, sex_prob = 0.3;
-float alpha = 2*10e-3, m0 = 0.3;
-unsigned int max_iter = 5000;
+unsigned int N_molecules = 400, N_atoms = 38;
+float L_box = 3., survival_rate = 0.90, mutation_prob = 0.01, sex_prob = 0.20;
+float alpha = 2*10e-4, m0 = 0.3;
+unsigned int max_iter = 30000;
 
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
