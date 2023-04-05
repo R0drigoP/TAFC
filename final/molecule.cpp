@@ -93,9 +93,10 @@ void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRando
       double mutation = x0/(1+alpha*iter);
 
       positions[atom_to_mutate][i] += mutation;
-      if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
-        positions[atom_to_mutate][i] -= 2*mutation;
+      //if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
+      //positions[atom_to_mutate][i] -= 2*mutation;
     }
+    
     this->Fit();
   }
   //se nao tiver feito mutacao calcula na mesma o potencial para os que sofreram reproducao sexuada

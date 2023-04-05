@@ -40,6 +40,9 @@ public:
   //Comparator
   static bool LessPot(molecule* mol1, molecule* mol2) {return mol1->Get_Fit() < mol2->Get_Fit();}
 
+  //Fit
+  void Fit();
+  
   //Mutation and Reproduction
   void Mutate(unsigned int iter, float m0, float alpha, int flag, TRandom3* gRandom = NULL);
   int generate_children3(vector<molecule*> pop, TRandom3* gRandom);
@@ -52,7 +55,7 @@ private:
   double **positions;
   double fitness;
 
-  void Fit();
+  //void Fit();
 };
 
 #endif
