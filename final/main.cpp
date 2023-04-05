@@ -15,11 +15,10 @@
 using namespace std;
 
 //global variables
-unsigned int N_molecules = 100, N_atoms = 38;
-float L_box = 3., survival_rate = 0.7, mutation_prob = 0.01, sex_prob = 0.6;
-float alpha = 0., m0 = 0.1;
-unsigned int max_iter = 100000;
-int N_times = 10;
+unsigned int N_molecules = 1000, N_atoms = 38;
+float L_box = 2., survival_rate = 0.85, mutation_prob = 0.15, sex_prob = 0.3;
+float alpha = 2*10e-3, m0 = 0.3;
+unsigned int max_iter = 50000;
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
@@ -74,8 +73,6 @@ struct Funcd {
 
 //probability of each molecule to be a parent
 int main(){
-  //cout << "ola1 " << endl;
-
   if(mating==1 &&  N_molecules * survival_rate < 2.){
     cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
     cout<<"Increase your population or the survival probability"<<endl;
@@ -211,6 +208,25 @@ int main(){
       
 	delete gRandom;
       }
+      
+      delete gRandom;
+    }
+
+
+    if(iter%400 == 0){
+      cout << "ITER NR " << iter << endl;
+      cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+    }
+
+
+    if(iter == max_iter-1){
+      positions = pop[0] -> Get_Pos();
+      final_fit =  pop[0]-> Get_Fit();
+      cout << "Final Pot " << final_fit << endl;
+      
+      //for(int i = 0; i < N_atomos; i++)
+      //cout << "Atomo " << i << " : " << positions[i][0] << ", " << positions[i][1] << ", " << positions[i][2] << endl;
+    }
     
     
       //cout << "Pot: " << pop[0] -> Get_Fit() << endl;
@@ -231,7 +247,6 @@ int main(){
     //so podemos fazer isto quando encontrarmos o max global
      for(int i = 0; i < N_atoms; i++ )
       for(int j = 0; j < 3; j++){
-        //cout << "ola" << i+5 << endl;
         p[i*3+j] = positions[i][j];
       }
     
