@@ -77,33 +77,103 @@ void molecule::Set_Fit(double fit){
 
 //Mutation and Reproduction
 
-void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRandom3* gRandom){
-  //gRandom = new TRandom3(0);
-  double check_if_mute = gRandom->Uniform(0,1);
+void molecule::SelectMutation(unsigned int iter, float m0, float alpha, int flag, TRandom3* gRandom){
   
+
+  double check_if_mute = gRandom->Uniform(0,1);
+
   if(check_if_mute < mutation_prob){
     nb_of_calls_mute ++;
-    int atom_to_mutate = (int)gRandom->Uniform(0, N_atoms);
-    for(int i=0; i<3; ++i){
-      
-      double x0 = gRandom->Uniform(-1,1)*m0*L_box;
 
-      double mutation = x0/(1+alpha*iter);
+    double mute_type = gRandom->Uniform(0,1);
 
-      positions[atom_to_mutate][i] += mutation;
-      
-      //if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
-      //  positions[atom_to_mutate][i] -= 2*mutation;
-
-    }
-    this->Fit();
+    //if (mute_type < 1)
+    this -> Mutate(iter, m0, alpha, gRandom);
+    //else if(mute_type >1)
+      //this -> MutateRotation(gRandom);
+    this -> Fit();
   }
-  //se nao tiver feito mutacao calcula na mesma o potencial para os que sofreram reproducao sexuada
-  else if(flag==1)
-    this->Fit();
-
-  //delete gRandom;
+  else if (flag == 1)
+    this -> Fit();
 }
+
+
+void molecule::MutateRotation(TRandom3* gRandom) {
+
+  this->Fit();
+
+  cout<<"BEFORE "<<this->Get_Fit()<<endl;
+  // Select a random rotation angle around each axis
+  double theta_x = gRandom->Uniform(-0.1, 0.1);
+  double theta_y = gRandom->Uniform(-0.1, 0.1);
+  double theta_z = gRandom->Uniform(-0.1, 0.1);
+
+  // Calculate the rotation matrices around each axis
+  double R_x[3][3] = {{1, 0, 0}, {0, cos(theta_x), -sin(theta_x)}, {0, sin(theta_x), cos(theta_x)}};
+  double R_y[3][3] = {{cos(theta_y), 0, sin(theta_y)}, {0, 1, 0}, {-sin(theta_y), 0, cos(theta_y)}};
+  double R_z[3][3] = {{cos(theta_z), -sin(theta_z), 0}, {sin(theta_z), cos(theta_z), 0}, {0, 0, 1}};
+
+  // Calculate the overall rotation matrix
+  double R[3][3] = {{0}};
+  for(int i=0; i<3; i++) {
+    for(int j=0; j<3; j++) {
+      for(int k=0; k<3; k++) {
+        R[i][j] += R_x[i][k] * R_y[k][j];
+      }
+    }
+  }
+  for(int i=0; i<3; i++) {
+    for(int j=0; j<3; j++) {
+      for(int k=0; k<3; k++) {
+        R[i][j] = R[i][j] * R_z[k][j];
+      }
+    }
+  }
+
+  // Apply the rotation to each atom position
+  for(int i=0; i<N_atoms; i++) {
+    double x = this->Get_Coord(i,0);
+    double y = this->Get_Coord(i,1);
+    double z = this->Get_Coord(i,2);
+
+    // Store the result of the rotation in a temporary vector
+    double temp[3] = {0};
+    for(int j=0; j<3; j++) {
+      temp[j] = R[j][0] * x + R[j][1] * y + R[j][2] * z;
+    }
+
+    // Update the atom position vector with the rotated values
+    positions[i][0] = temp[0];
+    positions[i][1] = temp[1];
+    positions[i][2] = temp[2];
+  }  
+  this->Fit();
+
+  cout<<"AFTER "<<this->Get_Fit()<<endl;
+}
+
+void molecule::Mutate(unsigned int iter, float m0, float alpha, TRandom3* gRandom){
+
+  int atom_to_mutate = (int)gRandom->Uniform(0, N_atoms);
+  for(int i=0; i<3; ++i){
+    
+    double x0 = gRandom->Uniform(-1,1)*m0*L_box;
+
+    double mutation = x0/(1+alpha*iter);
+    //cout<<positions[atom_to_mutate][i] <<endl;
+
+    positions[atom_to_mutate][i] += mutation;
+
+    
+    //if(positions[atom_to_mutate][i] < 0. || positions[atom_to_mutate][i] > L_box)
+    //  positions[atom_to_mutate][i] -= 2*mutation;
+
+  }
+
+
+}
+
+
 
 
 int molecule::generate_children3(vector<molecule*> pop, TRandom3* gRandom){
@@ -111,6 +181,8 @@ int molecule::generate_children3(vector<molecule*> pop, TRandom3* gRandom){
   //gRandom = new TRandom3(0);
 
   double check_if_sex = gRandom->Uniform(0,1);
+
+  //cout<<"chech if sex "<<check_if_sex<<endl;
 
   if(check_if_sex < sex_prob ){
 
@@ -124,6 +196,8 @@ int molecule::generate_children3(vector<molecule*> pop, TRandom3* gRandom){
 
     double mating_type = gRandom->Uniform(0,1);
 
+
+
     //call reproduction method
     //maybe add some new ones later...
     if(mating_type<m_mat){
@@ -131,9 +205,9 @@ int molecule::generate_children3(vector<molecule*> pop, TRandom3* gRandom){
       this->Mating_Plano3(pop[mom_index],pop[dad_index], gRandom);
     }
 
-    else{
+    if(mating_type>m_mat) {
       nb_of_calls_mat ++;
-      this->Mating_Sphere(pop[mom_index],pop[dad_index],gRandom);
+      this->Mating(pop[mom_index],pop[dad_index],gRandom->Uniform(0,1));
     }
     
     //delete gRandom;
@@ -174,7 +248,7 @@ void molecule::Mating_Sphere(molecule* mom, molecule* dad, TRandom3* gRandom){
   //setting positions to 0
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
-    positions[i][j] = gRandom -> Uniform(0., L_box);
+    positions[i][j] = 0;
   }
 
   //checking that there are at least 2 atoms for each parent inside the sphere
@@ -296,6 +370,11 @@ void molecule::Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom){
   //gRandom = new TRandom3(0);
   int dir = (int)gRandom -> Uniform(0,3);
 
+  for (int i = 0; i < N_atoms; i++){
+    for (int j = 0; j < 3; j++)
+    positions[i][j] = 0;
+  }
+
   
   //posicao centro de massa 
   for(int i = 0; i < N_atoms; i++)
@@ -318,25 +397,14 @@ void molecule::Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom){
   //choose every mom atom above CM
   for (int i = 0; i < N_atoms; i++){
 
-
     if(pos_mom[i][dir] > pos_CM){
-      for (int k = 0; k < nr_atoms; k++){
-        flag = 0;
-        for (int j = 0; j < 3; j++){
-          if (positions[k][j]==pos_mom[i][j])
-            flag++;
-        }
-        if(flag == 3)
-          break; 
-      }
-      if (flag != 3){
-        for(int j = 0; j < 3; j++)
-          positions[nr_atoms][j] = pos_mom[i][j];
-          nr_atoms ++;
+      for(int j = 0; j < 3; j++)
+        positions[nr_atoms][j] = pos_mom[i][j];
+      nr_atoms ++;
           //cout<<"mom  above"<<endl;
-        }
-      } 
     }
+  } 
+
 
   //choose every dad atom bellow CM
   for (int i = 0; i < N_atoms; i++){

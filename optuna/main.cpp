@@ -11,7 +11,7 @@
 #include <fstream>
 //#include "global.h"
 
-#include <omp.h>
+//#include <omp.h>
 
 
 //
@@ -20,7 +20,7 @@ using namespace std;
 
 //global variables
 
-unsigned int N_atoms = 38;
+unsigned int N_atoms = 13;
 
 //unsigned int N_molecules , N_atoms ;
 //float L_box , survival_rate , mutation_prob , sex_prob ;
@@ -81,7 +81,7 @@ struct Funcd {
 //probability of each molecule to be a parent
 int main(){
 
-  double t0 = omp_get_wtime();
+  //double t0 = omp_get_wtime();
 
   if(mating==1 &&  N_molecules * survival_rate < 2.){
     cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
@@ -127,6 +127,7 @@ int main(){
   VecDoub p(3*N_atoms);
 
   for(int iter = 0; iter < max_iter; iter++){
+    cout<<"-----"<<endl;
 
 
     //REPRODUCTION 
@@ -140,7 +141,7 @@ int main(){
         for(int i = 0 ; i < parents_nb; i++)
           flag[i] = 0; //setting flag to 0 for parents
 
-        TRandom3* gRandom = new TRandom3( 42); 
+        TRandom3* gRandom = new TRandom3(0); 
 
 
         #pragma omp for
@@ -152,10 +153,10 @@ int main(){
 
       //---assexual reproduction
 
-      TRandom3* gRandom = new TRandom3( 42); 
+      TRandom3* gRandom = new TRandom3(0); 
       #pragma omp for
       for(int mol = 0; mol < N_molecules; mol++)
-        pop[mol] -> Mutate(iter, m0, alpha, flag[mol], gRandom);
+        pop[mol] -> SelectMutation(iter, m0, alpha, flag[mol], gRandom);
       
       delete gRandom;
 
@@ -205,10 +206,9 @@ int main(){
     //gr -> AddPoint( iter, pop[0] -> Get_Fit());
 
     //prints
-    
-    if(iter%10000 == 0){
-      cout << "ITER NR " << iter << endl;
-      cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+    /*
+    if(iter%100000 == 0){
+      cout << "ITER NR " << iter << " -- "<< pop[0] -> Get_Fit() <<endl;
     }/*
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
@@ -278,8 +278,8 @@ int main(){
 
   //cout<<"Total pot calls: "<<nb_of_calls<<endl;
 
-  double t1 = omp_get_wtime();
-  printf("\n");
-  printf("Computation time    =  %f ms\n", (t1-t0) * 1000);  
+  //double t1 = omp_get_wtime();
+  //printf("\n");
+  //printf("Computation time    =  %f ms\n", (t1-t0) * 1000);  
   return 0;
 }
