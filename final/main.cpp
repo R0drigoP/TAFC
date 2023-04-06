@@ -11,7 +11,7 @@
 #include <fstream>
 #include "global.h"
 
-#include <omp.h>
+//#include <omp.h>
 
 
 //
@@ -21,7 +21,7 @@ using namespace std;
 //global variables
 
 
-unsigned int N_molecules = 100, N_atoms = 13;
+unsigned int N_molecules = 100, N_atoms = 38;
 float L_box = 2., survival_rate = 0.90, mutation_prob = 0.15, sex_prob = 0.5;
 float alpha = 0., m0 = 0.1;
 unsigned int max_iter = 60000;
@@ -31,7 +31,7 @@ unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
 //int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 0;
+bool mating = 1;
 
 unsigned int nb_of_calls = 0, nb_of_calls_mute = 0, nb_of_calls_mat = 0, nb_of_calls_mat_plano = 0;
 
@@ -81,7 +81,7 @@ struct Funcd {
 //probability of each molecule to be a parent
 int main(){
 
-  double t0 = omp_get_wtime();
+  //double t0 = omp_get_wtime();
 
   if(mating==1 &&  N_molecules * survival_rate < 2.){
     cout<<"To have sexual reprodution at least 2 molecules must survive each gen..."<<endl;
@@ -180,6 +180,7 @@ int main(){
     }
 
     //print to movie file
+    /*
     if(iter == 0){
       double** best_pos = pop[0]->Get_Pos();
       for(int i = 0; i < N_atoms; ++i){
@@ -200,9 +201,10 @@ int main(){
     }
     
     gr -> AddPoint( iter, pop[0] -> Get_Fit());
+    */
 
     //prints
-    if(iter%1000 == 0){
+    if(iter%100 == 0){
       cout << "ITER NR " << iter << endl;
       cout << "Pot: " << pop[0] -> Get_Fit() << endl;
     }
@@ -210,6 +212,36 @@ int main(){
       positions = pop[0] -> Get_Pos();
       final_fit =  pop[0]-> Get_Fit();
       cout << "Final Pot " << final_fit << endl;
+    }
+
+    if(iter>100){
+    
+      #pragma omp parallel
+      {
+
+      #pragma omp for
+        for (int k = 0; k < N_atoms; k++ ){
+          VecDoub ploc(3*N_atoms);
+
+          
+
+          positions = (pop[k] -> Get_Pos());
+
+          for(int i = 0; i < N_atoms; i++ ){
+            for(int j = 0; j < 3; j++)
+              p[i*3+j] = positions[i][j];
+          }
+
+          p = frprmn.minimize(ploc);
+          Funcd func;
+          double pot_loc = func(ploc);
+
+          if (pot_loc < -165){
+            cout<<"eureka"<<endl;
+            cout<<"Atom "<<k<<" "<<"iter "<<iter<<pot_loc<<endl;
+          }
+        }
+      }
     }
   }//closing iterations loop
 
@@ -269,9 +301,10 @@ int main(){
 
   cout<<"Total pot calls: "<<nb_of_calls<<endl;
 
+  /*
   double t1 = omp_get_wtime();
   printf("\n");
   printf("Number of threads   =  %i\n", omp_get_max_threads());
-  printf("Computation time    =  %f ms\n", (t1-t0) * 1000);  
+  printf("Computation time    =  %f ms\n", (t1-t0) * 1000);  */
   return 0;
 }

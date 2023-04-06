@@ -126,14 +126,14 @@ int molecule::generate_children3(vector<molecule*> pop, TRandom3* gRandom){
 
     //call reproduction method
     //maybe add some new ones later...
-    if(mating_type<0.5){
+    if(mating_type<0.9){
       nb_of_calls_mat_plano ++;
       this->Mating_Plano3(pop[mom_index],pop[dad_index], gRandom);
     }
 
     else{
       nb_of_calls_mat ++;
-      this->Mating_Sphere(pop[mom_index],pop[dad_index],gRandom);
+      this->Mating(pop[mom_index],pop[dad_index],gRandom->Uniform(0,1));
     }
     
     //delete gRandom;
@@ -174,7 +174,7 @@ void molecule::Mating_Sphere(molecule* mom, molecule* dad, TRandom3* gRandom){
   //setting positions to 0
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
-    positions[i][j] = gRandom -> Uniform(0., L_box);
+    positions[i][j] = 0;
   }
 
   //checking that there are at least 2 atoms for each parent inside the sphere
@@ -296,6 +296,11 @@ void molecule::Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom){
   //gRandom = new TRandom3(0);
   int dir = (int)gRandom -> Uniform(0,3);
 
+  for (int i = 0; i < N_atoms; i++){
+    for (int j = 0; j < 3; j++)
+    positions[i][j] = 0;
+  }
+
   
   //posicao centro de massa 
   for(int i = 0; i < N_atoms; i++)
@@ -320,23 +325,13 @@ void molecule::Mating_Plano3(molecule* mom, molecule* dad, TRandom3* gRandom){
 
 
     if(pos_mom[i][dir] > pos_CM){
-      for (int k = 0; k < nr_atoms; k++){
-        flag = 0;
-        for (int j = 0; j < 3; j++){
-          if (positions[k][j]==pos_mom[i][j])
-            flag++;
-        }
-        if(flag == 3)
-          break; 
-      }
-      if (flag != 3){
-        for(int j = 0; j < 3; j++)
-          positions[nr_atoms][j] = pos_mom[i][j];
-          nr_atoms ++;
+      for(int j = 0; j < 3; j++)
+        positions[nr_atoms][j] = pos_mom[i][j];
+      nr_atoms ++;
           //cout<<"mom  above"<<endl;
-        }
-      } 
     }
+  } 
+    
 
   //choose every dad atom bellow CM
   for (int i = 0; i < N_atoms; i++){
