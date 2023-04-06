@@ -163,6 +163,37 @@ int main(){
     //sort population
     sort(pop.begin(), pop.end(), molecule::LessPot);
 
+    //local minimization
+    if(iter>100){
+    
+      #pragma omp parallel
+      {
+
+      #pragma omp for
+        for (int k = 0; k < N_atoms; k++ ){
+          VecDoub ploc(3*N_atoms);
+
+          
+
+          positions = (pop[k] -> Get_Pos());
+
+          for(int i = 0; i < N_atoms; i++ ){
+            for(int j = 0; j < 3; j++)
+              p[i*3+j] = positions[i][j];
+          }
+
+          p = frprmn.minimize(ploc);
+          Funcd func;
+          double pot_loc = func(ploc);
+
+          if (pot_loc < -165){
+            cout<<"eureka"<<endl;
+            cout<<"Atom "<<k<<" "<<"iter "<<iter<<pot_loc<<endl;
+          }
+        }
+      }
+    }
+
     //matar os mais fracos e fazer copias da melhor pop (se calhar atribuir alguma aleatoriadade a este processo)
     #pragma omp parallel
     {
@@ -204,7 +235,7 @@ int main(){
     */
 
     //prints
-    if(iter%100 == 0){
+    if(iter%500 == 0){
       cout << "ITER NR " << iter << endl;
       cout << "Pot: " << pop[0] -> Get_Fit() << endl;
     }
@@ -214,35 +245,7 @@ int main(){
       cout << "Final Pot " << final_fit << endl;
     }
 
-    if(iter>100){
     
-      #pragma omp parallel
-      {
-
-      #pragma omp for
-        for (int k = 0; k < N_atoms; k++ ){
-          VecDoub ploc(3*N_atoms);
-
-          
-
-          positions = (pop[k] -> Get_Pos());
-
-          for(int i = 0; i < N_atoms; i++ ){
-            for(int j = 0; j < 3; j++)
-              p[i*3+j] = positions[i][j];
-          }
-
-          p = frprmn.minimize(ploc);
-          Funcd func;
-          double pot_loc = func(ploc);
-
-          if (pot_loc < -165){
-            cout<<"eureka"<<endl;
-            cout<<"Atom "<<k<<" "<<"iter "<<iter<<pot_loc<<endl;
-          }
-        }
-      }
-    }
   }//closing iterations loop
 
   positions = (pop[0] -> Get_Pos());
