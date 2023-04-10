@@ -18,3 +18,61 @@ float alpha = 2*10e-3, m0 = 0.3;
 unsigned int max_iter = 50000;
 
 Pot: -170.03
+
+
+Rodrigo (Ignorem os parâmetros)
+
+3 átomos:
+Min_value = -2.99969, a chamar 4944 a função de fit
+
+unsigned int N_molecules = 100, N_atoms = 3;
+float L_box = 0.5, survival_rate = 0.8, mutation_prob = 0.005, sex_prob = 0.5;
+float alpha = 0., m0 = 0.05, m0_inc = 0.001, tol = 1e-5;
+unsigned int max_iter = 200000, m0_iteration = 100, stable_iter = 300;
+
+4 átomos:
+Min_value = -5.99575, a chamar 9812 a função fit
+
+unsigned int N_molecules = 100, N_atoms = 4;
+float L_box = 0.5, survival_rate = 0.8, mutation_prob = 0.005, sex_prob = 0.5;
+float alpha = 0., m0 = 0.05, m0_inc = 0.001, tol = 1e-5;
+unsigned int max_iter = 200000, m0_iteration = 100, stable_iter = 500;
+
+17 átomos:
+Min_value = -61.295, a chamar 450073 + otimização local
+
+unsigned int N_molecules = 200, N_atoms = 17;
+float L_box = 1., survival_rate = 0.6, mutation_prob = 0.01, sex_prob = 0.5;
+float alpha = 0., m0 = 0.02, m0_inc = 0., tol = 1e-5;
+unsigned int max_iter = 200000, m0_iteration = 100, stable_iter = 10000;
+
+20 átomos:
+Min_value = -77.1752, a chamar 1634252 + otimização local
+
+unsigned int N_molecules = 200, N_atoms = 20;
+float L_box = 1., survival_rate = 0.6, mutation_prob = 0.05, sex_prob = 0.5;
+float alpha = 0., m0 = 0.01, m0_inc = 0., tol = 1e-6;
+unsigned int max_iter = 200000, m0_iteration = 100, stable_iter = 100000;
+
+30 átomos:
+Min_value = -127.641, a chamar 212943
+
+unsigned int N_molecules = 100, N_atoms = 30;
+float L_box = 1.5, survival_rate = 0.8, mutation_prob = 0.005, sex_prob = 0.5;
+float alpha = 0., m0 = 0.015, m0_inc = 0., m_prob_inc = 0., tol = 1e-4;
+unsigned int max_iter = 200000, m0_iteration = 100, stable_iter = 10000;
+int N_times = 50, constructor_flag = 1;
+unsigned int N_molecules = 50, N_atoms = 38;
+float L_box = 1., survival_rate = 0.85, mutation_prob = 0.01, sex_prob = 0.5;
+float alpha = 0., m0 = 0.05, m0_inc = 0., m_prob_inc = 0., tol = 1e-5;
+unsigned int max_iter = 500000, m0_iteration = 100, stable_iter = 50000;
+int N_times = 50, constructor_flag = 1;
+
+38 átomos:
+Min_value = -172.226, a chamar 214078 + otimização local
+
+unsigned int N_molecules = 50, N_atoms = 38;
+float L_box = 1., survival_rate = 0.85, mutation_prob = 0.01, sex_prob = 0.5;
+float alpha = 0., m0 = 0.05, m0_inc = 0., m_prob_inc = 0., tol = 1e-4;
+unsigned int max_iter = 200000, m0_iteration = 100, stable_iter = 10000;
+int N_times = 50, constructor_flag = 1;
