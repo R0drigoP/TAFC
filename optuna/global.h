@@ -1,8 +1,13 @@
 inline float alpha = 0;
 //inline float m0 = 0.3;
-inline unsigned int max_iter = 40;
-inline unsigned int N_molecules = 40;
-inline float L_box = 3.;
+inline unsigned int max_iter = 10000000;
+inline float sex_prob = 0.0;
+inline float m_mat = 0;
+inline bool mating = 0;
+
+inline float L_box = 1.;
+
+extern unsigned int N_atoms;
 
 
 extern unsigned int parents_nb;

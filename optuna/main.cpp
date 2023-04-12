@@ -1,6 +1,3 @@
-#include "nr3.h"
-#include "mins.h"
-#include "mins_ndim.h"
 
 #include "molecule.h"
 #include "TGraph.h"
@@ -9,7 +6,6 @@
 #include "TH1F.h"
 #include <ctime>
 #include <fstream>
-//#include "global.h"
 
 //#include <omp.h>
 
@@ -19,64 +15,19 @@
 using namespace std;
 
 //global variables
-
 unsigned int N_atoms = 13;
 
-//unsigned int N_molecules , N_atoms ;
-//float L_box , survival_rate , mutation_prob , sex_prob ;
-//float alpha , m0 ;
-//unsigned int max_iter ;
+
 
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
 //int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-
 unsigned int nb_of_calls = 0, nb_of_calls_mute = 0, nb_of_calls_mat = 0, nb_of_calls_mat_plano = 0;
 
 double final_fit = 0.;
 
-struct Funcd {
-  
-    Funcd(){}
-
-    Doub operator() (VecDoub_I &x) {
-      Doub f = 0.;
-      for (int i = 0; i < N_atoms-1; ++i){
-          for(int j = i+1; j < N_atoms; ++j){
-              // Calculate radius
-              Doub r = 0.;
-              for(int k = 0; k < 3; ++k)
-                  r += (x[i*3+k] - x[j*3+k])*(x[i*3+k] - x[j*3+k]);
-              r = sqrt(r);
-
-              f += 4*( pow(1./r, 12) - pow(1./r, 6) );
-          }
-      }
-      return f;
-    }
-
-    void df(VecDoub_I &x, VecDoub_O &deriv) {
-
-        for (int i = 0; i < N_atoms-1; ++i){
-            for(int j = i+1; j < N_atoms; ++j){
-                // Calculate radius
-                Doub r = 0.;
-                for(int k = 0; k < 3; ++k)
-                    r += (x[i*3+k] - x[j*3+k])*(x[i*3+k] - x[j*3+k]);
-                r = sqrt(r);
-
-                // Calculate force and add to deriv
-                Doub force = -24*( 2*pow(1./r, 13) - pow(1./r, 7) );
-                for(int k = 0; k < 3; ++k){
-                    deriv[i*3+k] += force*(x[i*3+k] - x[j*3+k]);
-                    deriv[j*3+k] += force*(x[j*3+k] - x[i*3+k]);
-                }
-            }
-        }
-    }
-};
 
 //probability of each molecule to be a parent
 int main(){
@@ -90,7 +41,7 @@ int main(){
   }
 
   if(survival_rate < 0. || survival_rate > 1. || parents_nb >= N_molecules){
-    cout << "Check your survival_rate:"<<survival_rate << endl;
+    cout << "Check your survival_rate" << endl;
     return 1;
   }
 
@@ -103,13 +54,9 @@ int main(){
   for (int i = 0; i < N_molecules; i++) 
     flag[i] = 0;
 
-
-  //TCanvas *c1 = new TCanvas();
-  //auto gr = new TGraph();
-
-  //ofstream text_file("best_molecule.bs");
-  //ofstream movie_file("best_molecule.mv");
   ofstream opt_file("opt.txt");
+  ofstream opt_calls("calls.txt");
+
   
   //population of molecules
   vector<molecule*> pop(N_molecules);
@@ -126,8 +73,12 @@ int main(){
   Frprmn<Funcd> frprmn(funcd);
   VecDoub p(3*N_atoms);
 
+  //variables for early stopping
+  double best = 0.; //so far best potential
+  int iter_stop = 0; //iterations with the same best so far
+  int acceptance = 1000; //nb of iterations allowed in the same best
+
   for(int iter = 0; iter < max_iter; iter++){
-    cout<<"-----"<<endl;
 
 
     //REPRODUCTION 
@@ -156,7 +107,7 @@ int main(){
       TRandom3* gRandom = new TRandom3(0); 
       #pragma omp for
       for(int mol = 0; mol < N_molecules; mol++)
-        pop[mol] -> SelectMutation(iter, m0, alpha, flag[mol], gRandom);
+        pop[mol] -> Mutate(iter, m0, alpha, flag[mol], gRandom);
       
       delete gRandom;
 
@@ -180,41 +131,30 @@ int main(){
         }
       }
     }
-    /*
 
-    //print to movie file
-    if(iter == 0){
-      double** best_pos = pop[0]->Get_Pos();
-      for(int i = 0; i < N_atoms; ++i){
-        text_file << "atom C " << flush;
-        for(int j = 0; j < 3; ++j)
-          text_file << best_pos[i][j] << " " << flush;
-        text_file << endl;
-      }
-    }
-
-    else if(iter % 1000 == 0){
-      movie_file << "frame" << endl;
-      double** best_pos = pop[0]->Get_Pos();
-      for(int i = 0; i < N_atoms; ++i){
-        for(int j = 0; j < 3; ++j)
-          movie_file << best_pos[i][j] << " ";
-      }
-      movie_file << endl << endl;
-    }*/
     
-    //gr -> AddPoint( iter, pop[0] -> Get_Fit());
 
     //prints
-    /*
-    if(iter%100000 == 0){
-      cout << "ITER NR " << iter << " -- "<< pop[0] -> Get_Fit() <<endl;
-    }/*
+    if(iter%100 == 0)
+      cout << "ITER NR " << iter << " Pot: " << pop[0] -> Get_Fit() << endl;
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
       final_fit =  pop[0]-> Get_Fit();
       cout << "Final Pot " << final_fit << endl;
-    }*/
+    }
+
+    //early stopping
+    double current = pop[0]->Get_Fit();
+    if ( current < best){
+      iter_stop=0;
+      best = current;
+    }
+    else{
+      iter_stop ++;
+      if(iter_stop == acceptance)
+        break;
+    }
+    
   }//closing iterations loop
 
   positions = (pop[0] -> Get_Pos());
@@ -225,7 +165,7 @@ int main(){
   
   pop[0] -> Fit();
 
-  cout << " before min Pot: " << pop[0] -> Get_Fit() << endl;
+  cout << "Pot: " << pop[0] -> Get_Fit() << endl;
 
   p = frprmn.minimize(p);
 
@@ -237,10 +177,13 @@ int main(){
 
   pop[0] -> Fit();
 
-  cout << "after min Pot: " << pop[0] -> Get_Fit() << endl;
+  cout << "Pot: " << pop[0] -> Get_Fit() << endl;
 
   opt_file<<pop[0] -> Get_Fit()<<flush;
+  opt_file.close();
 
+  opt_calls<<nb_of_calls<<flush;
+  opt_calls.close();
   
   for(int i = 0; i < 3; ++i) 
     delete[] positions[i];
@@ -253,33 +196,19 @@ int main(){
   
   pop.clear();
   
-  //double atom_size = 0.1/L_box;
-  
-  //text_file << endl << "spec C 0.1 Red" << endl
-	//    << endl << "bonds C C 0.3 1.0 0.01 0.0"
-	//    << endl << "bonds C H 0.4 1.0 0.01 1.0"
-	//    << endl << "scale 100"
-	//    << endl << "inc 5.0" <<endl<< flush;
-
+  double atom_size = 0.1/L_box;
   
 
-  //c1 -> cd();
-  //gr->GetHistogram()->SetMaximum(-0.1*final_fit);
-  //gr->GetHistogram()->SetMinimum(1.01*final_fit);
-
-  //gr -> Draw("AP");
-  //c1 -> SaveAs("evolution.pdf");
   
-  //text_file.close();
-  //movie_file.close();
-  opt_file.close();
+  
 
 
+  cout<<"Total pot calls: "<<nb_of_calls<<endl;
 
-  //cout<<"Total pot calls: "<<nb_of_calls<<endl;
-
-  //double t1 = omp_get_wtime();
-  //printf("\n");
-  //printf("Computation time    =  %f ms\n", (t1-t0) * 1000);  
+  /*
+  double t1 = omp_get_wtime();
+  printf("\n");
+  printf("Number of threads   =  %i\n", omp_get_max_threads());
+  printf("Computation time    =  %f ms\n", (t1-t0) * 1000);  */
   return 0;
 }
