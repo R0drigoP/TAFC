@@ -7,6 +7,7 @@
 #include <ctime>
 #include <fstream>
 
+
 //#include <omp.h>
 
 
@@ -76,7 +77,7 @@ int main(){
   //variables for early stopping
   double best = 0.; //so far best potential
   int iter_stop = 0; //iterations with the same best so far
-  int acceptance = 1000; //nb of iterations allowed in the same best
+  int acceptance = 500; //nb of iterations allowed in the same best
 
   for(int iter = 0; iter < max_iter; iter++){
 
@@ -135,23 +136,26 @@ int main(){
     
 
     //prints
+    /*
     if(iter%100 == 0)
       cout << "ITER NR " << iter << " Pot: " << pop[0] -> Get_Fit() << endl;
     if(iter == max_iter-1){
       positions = pop[0] -> Get_Pos();
       final_fit =  pop[0]-> Get_Fit();
       cout << "Final Pot " << final_fit << endl;
-    }
+    }*/
 
     //early stopping
     double current = pop[0]->Get_Fit();
+    if (iter==0)
+      best = current;
     if ( current < best){
       iter_stop=0;
       best = current;
     }
     else{
       iter_stop ++;
-      if(iter_stop == acceptance)
+      if(iter_stop == acceptance  )
         break;
     }
     
@@ -167,7 +171,7 @@ int main(){
 
   cout << "Pot: " << pop[0] -> Get_Fit() << endl;
 
-  p = frprmn.minimize(p);
+  /*p = frprmn.minimize(p);
 
   for(int i = 0; i < N_atoms; i++ )
     for(int j = 0; j < 3; j++)
@@ -177,7 +181,7 @@ int main(){
 
   pop[0] -> Fit();
 
-  cout << "Pot: " << pop[0] -> Get_Fit() << endl;
+  cout << "Pot: " << pop[0] -> Get_Fit() << endl;*/
 
   opt_file<<pop[0] -> Get_Fit()<<flush;
   opt_file.close();

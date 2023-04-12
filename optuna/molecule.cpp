@@ -11,7 +11,7 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
   
   gRandom = new TRandom3(0);
 
-  
+  /*
   for (int i = 0; i < N_atoms; ++i){
       //double r = gRandom -> Uniform(0., l_box/2.);
       double r = l_box/2.;
@@ -21,12 +21,12 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
       positions[i][0] = r*sin(theta)*cos(phi);
       positions[i][1] = r*sin(theta)*sin(phi);
       positions[i][2] = r*cos(theta);
-    }
-  /*
+    }*/
+  
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
     positions[i][j] = gRandom -> Uniform(0., l_box);
-  }*/
+  }
 
   /*
   
@@ -156,10 +156,11 @@ void molecule::Fit(){
       double r = 0.;
       for(int k = 0; k < 3; ++k)
         r += (positions[i][k] - positions[j][k])*(positions[i][k] - positions[j][k]);
-      r = sqrt(r);
+      //r = sqrt(r);
+      double inv = 1./r;
 
       //Calculate Potential and sum to f_value
-      f += 4*( pow(1./r, 12) - pow(1./r, 6) );
+      f += 4*( inv*inv*inv*inv*inv*inv - inv*inv*inv );
     }
   }
   fitness = f;

@@ -5,7 +5,6 @@ inline float sex_prob = 0.0;
 inline float m_mat = 0;
 inline bool mating = 0;
 
-inline float L_box = 1.;
 
 extern unsigned int N_atoms;
 
