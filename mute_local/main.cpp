@@ -7,8 +7,7 @@
 #include "TH1F.h"
 #include <ctime>
 #include <fstream>
-#include "global.h"
-
+#include "parameters.h"
 //#include <omp.h>
 
 
@@ -19,19 +18,15 @@ using namespace std;
 //global variables
 
 
-unsigned int N_molecules = 1000, N_atoms = 38;
-float L_box = 2., survival_rate = 0.95, mutation_prob = 0.01, sex_prob = 0.5;
-float alpha = 0., m0 = 0.5;
-unsigned int max_iter = 600000;
-
+unsigned int  N_atoms = 55;
 
 unsigned int parents_nb = int(survival_rate * N_molecules);
 //int couples_nb = int(parents_nb/2);
 //int children_per_couple = ( N_moleculas - parents_nb) / couples_nb;
 
-bool mating = 0;
+int max_iter = 6000;
 
-unsigned int nb_of_calls = 0, nb_of_calls_mute = 0, nb_of_calls_mat = 0, nb_of_calls_mat_plano = 0;
+unsigned int nb_of_calls = 0, nb_of_calls_der=0, nb_of_calls_mute = 0, nb_of_calls_mat = 0, nb_of_calls_mat_plano = 0;
 
 double final_fit = 0.;
 
@@ -103,11 +98,14 @@ int main(){
     flag[i] = 0;
 
 
-  TCanvas *c1 = new TCanvas();
-  auto gr = new TGraph();
+  //TCanvas *c1 = new TCanvas();
+  //auto gr = new TGraph();
 
   ofstream text_file("best_molecule.bs");
   ofstream movie_file("best_molecule.mv");
+
+   ofstream opt_file("opt.txt");
+
   
   //population of molecules
   vector<molecule*> pop(N_molecules);
@@ -165,9 +163,7 @@ int main(){
     
 
     //matar os mais fracos e fazer copias da melhor pop (se calhar atribuir alguma aleatoriadade a este processo)
-    #pragma omp parallel
-    {
-      #pragma omp for
+
       for(int mol = static_cast<int>(survival_rate*N_molecules); mol < N_molecules; mol += static_cast<int>(survival_rate*N_molecules)){
         int alive = 0;
         while(alive < survival_rate*N_molecules && (mol+alive)<N_molecules){
@@ -178,10 +174,11 @@ int main(){
           ++alive;
         }
       }
-    }
+    
 
     //print to movie file
-    /*
+    
+    
     if(iter == 0){
       double** best_pos = pop[0]->Get_Pos();
       for(int i = 0; i < N_atoms; ++i){
@@ -191,7 +188,7 @@ int main(){
         text_file << endl;
       }
     }
-    else if(iter % 1000 == 0){
+    else if(iter % 100 == 0){
       movie_file << "frame" << endl;
       double** best_pos = pop[0]->Get_Pos();
       for(int i = 0; i < N_atoms; ++i){
@@ -201,18 +198,13 @@ int main(){
       movie_file << endl << endl;
     }
     
-    gr -> AddPoint( iter, pop[0] -> Get_Fit());
-    */
+    //gr -> AddPoint( iter, pop[0] -> Get_Fit());
 
     //prints
-    if(iter%100 == 0){
+    /*
+    if(iter%1000 == 0 || (iter>3000 && iter%100==0)){
       cout << "ITER NR " << iter << " Pot: " << pop[0] -> Get_Fit() << endl;
-    }
-    if(iter == max_iter-1){
-      positions = pop[0] -> Get_Pos();
-      final_fit =  pop[0]-> Get_Fit();
-      cout << "Final Pot " << final_fit << endl;
-    }
+    }*/
 
     
   }//closing iterations loop
@@ -239,6 +231,9 @@ int main(){
 
   cout << "Pot: " << pop[0] -> Get_Fit() << endl;
 
+  opt_file<<pop[0] -> Get_Fit()<<flush;
+  opt_file.close();
+
   
   for(int i = 0; i < 3; ++i) 
     delete[] positions[i];
@@ -250,6 +245,7 @@ int main(){
     //delete *it;
   
   pop.clear();
+
   
   double atom_size = 0.1/L_box;
   
@@ -258,8 +254,8 @@ int main(){
 	    << endl << "bonds C H 0.4 1.0 0.01 1.0"
 	    << endl << "scale 100"
 	    << endl << "inc 5.0" <<endl<< flush;
-  /*
-
+  
+/*
   c1 -> cd();
   gr->GetHistogram()->SetMaximum(-0.1*final_fit);
   gr->GetHistogram()->SetMinimum(1.01*final_fit);
@@ -272,6 +268,8 @@ int main(){
 
 
   cout<<"Total pot calls: "<<nb_of_calls<<endl;
+  cout<<"Total der calls: "<<nb_of_calls_der<<endl;
+
 
   /*
   double t1 = omp_get_wtime();

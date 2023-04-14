@@ -169,7 +169,7 @@ struct Frprmn : Linemethod<T> {
 		ftol(ftoll) {}
 	VecDoub minimize(VecDoub_I &pp)
 	{
-		const Int ITMAX=200;
+		const Int ITMAX=400;
 		const Doub EPS=1.0e-18;
 		const Doub GTOL=1.0e-3;
 		Doub gg,dgg;
@@ -212,8 +212,8 @@ struct Frprmn : Linemethod<T> {
 			}
 		}
 		//call("Too many iterations in frprmn");
-		cout<<"Too many iterations in frprmn"<<endl;
-		return pp; //returning original value if fail
+		//cout<<"Too many iterations in frprmn"<<endl;
+		return pp; //returning original value if given iters weren't sufficient
 		//exit(1);
 	}
 };

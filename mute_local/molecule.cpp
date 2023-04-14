@@ -11,6 +11,7 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
   
   gRandom = new TRandom3(0);
 
+  /*
   for (int i = 0; i < N_atoms; ++i){
       //double r = gRandom -> Uniform(0., l_box/2.);
       double r = l_box/2.;
@@ -20,14 +21,104 @@ molecule::molecule(unsigned int n_atoms, float l_box, float mute_prob) : N_atoms
       positions[i][0] = r*sin(theta)*cos(phi);
       positions[i][1] = r*sin(theta)*sin(phi);
       positions[i][2] = r*cos(theta);
-    }
+    }*/
   /*
   for (int i = 0; i < N_atoms; i++){
     for (int j = 0; j < 3; j++)
     positions[i][j] = gRandom -> Uniform(0., l_box);
   }*/
 
-  delete gRandom;
+  
+  
+      int N_atoms_out = 35;
+      int N_atoms_in = 20;
+
+      double r_in  = l_box/3.;
+      double r_out =  3*l_box/4.;
+
+      positions[0][0] = 0.;
+      positions[0][1] = 0.;
+      positions[0][2] = 0.;
+
+      for (int i = 1; i < N_atoms_out; ++i){
+      //double r = gRandom -> Uniform(0., l_box/2.);
+
+  
+      double theta = gRandom -> Uniform(0., 2*M_PI);
+      double phi = gRandom -> Uniform(0., M_PI);
+      
+
+      positions[i][0] = r_out*sin(theta)*cos(phi);
+      positions[i][1] = r_out*sin(theta)*sin(phi);
+      positions[i][2] = r_out*cos(theta);
+    }
+
+    for (int i = N_atoms_out; i < N_atoms; ++i){
+      //double r = gRandom -> Uniform(0., l_box/2.);
+
+
+      double theta = gRandom -> Uniform(0., 2*M_PI);
+      double phi = gRandom -> Uniform(0., M_PI);
+      
+
+      positions[i][0] = r_in*sin(theta)*cos(phi);
+      positions[i][1] = r_in*sin(theta)*sin(phi);
+      positions[i][2] = r_in*cos(theta);
+    }
+/*
+double a = 1; // lattice constant
+
+int cell = ceil(pow(N_atoms, 1./3.));
+int n1 = ceil(pow(N_atoms, 1./3.));
+int n2 = ceil(pow(N_atoms, 1./3.));
+int n3 = N_atoms -n1 -n2;
+
+
+int l = 0;
+
+for (int i = 0; i <4 ; i++) {
+  for (int j = 0; j <3; j++) {
+    for (int k = 0; k <3; k++) {
+      if (i==0 && j==0 && k==0){
+        // First atom at corner
+        positions[l][0] = i*a;
+        positions[l][1] = j*a;
+        positions[l][2] = k*a;
+        l++;}
+      
+        
+        if (l < N_atoms) {
+          // Second atom on face with x-axis
+          positions[l][0] = (i + 0.5)*a;
+          positions[l][1] = (j + 0.5)*a;
+          positions[l][2] = k*a;
+          l++;
+        }
+
+        if (l < N_atoms) {
+          // Third atom on face with y-axis
+          positions[l][0] = i*a;
+          positions[l][1] = (j + 0.5)*a;
+          positions[l][2] = (k + 0.5)*a;
+          l++;
+        }
+
+        if (l < N_atoms) {
+          // Fourth atom on face with z-axis
+          positions[l][0] = (i + 0.5)*a;
+          positions[l][1] = j*a;
+          positions[l][2] = (k + 0.5)*a;
+          l++;
+        }
+      
+    }
+  }
+}*/
+
+  /*
+  for(int i=0; i<N_atoms;i++)
+      cout<<i<<" "<<positions[i][0]<<" "<<positions[i][1]<<" "<<positions[i][2]<<endl;
+  delete gRandom;*/
 
   this->Fit();
 }
@@ -64,10 +155,12 @@ void molecule::Fit(){
       double r = 0.;
       for(int k = 0; k < 3; ++k)
         r += (positions[i][k] - positions[j][k])*(positions[i][k] - positions[j][k]);
-      r = sqrt(r);
+     // r = sqrt(r);
+      double inv = 1./r;
+      double inv3=inv*inv*inv;
 
       //Calculate Potential and sum to f_value
-      f += 4*( pow(1./r, 12) - pow(1./r, 6) );
+      f += 4*inv3*( inv3 - 1);
     }
   }
   fitness = f;
@@ -95,6 +188,7 @@ void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRando
   if(check_if_mute < mutation_prob){
     nb_of_calls_mute ++;
     int atom_to_mutate = (int)gRandom->Uniform(0, N_atoms);
+
     for(int i=0; i<3; ++i){
       
       double x0 = gRandom->Uniform(-1,1)*m0*L_box;
@@ -109,17 +203,19 @@ void molecule::Mutate(unsigned int iter, float m0, float alpha, int flag, TRando
 
 
     }
-    if(iter>10)
+    if(iter>5000)
       this->Local_Min();
 
 
     this->Fit();
 
-    if (fitness < -172. ){
+    /*
+
+    if (fitness < -173. ){
       //cout<<"eureka"<<endl;
       //cout<<"Atom "<<k<<" "<<"iter "<<iter<<"  "<<pot_loc<<endl;
       cout<<"Local min worked  "<<fitness<<endl;
-    }
+    }*/
   }
   //se nao tiver feito mutacao calcula na mesma o potencial para os que sofreram reproducao sexuada
   else if(flag==1)

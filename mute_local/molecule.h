@@ -2,7 +2,6 @@
 #define __molecule__
 
 #include "TRandom3.h"
-#include "global.h"
 #include <cstdio>
 #include <iostream>
 #include <iomanip>
@@ -77,11 +76,13 @@ struct Funcd {
               Doub r = 0.;
               for(int k = 0; k < 3; ++k)
                   r += (x[i*3+k] - x[j*3+k])*(x[i*3+k] - x[j*3+k]);
-              r = sqrt(r);
+              Doub inv =1/r;
+              Doub inv3 = inv*inv*inv;
 
-              f += 4*( pow(1./r, 12) - pow(1./r, 6) );
+              f += 4*(inv3*inv3- inv3);
           }
       }
+      nb_of_calls ++;
       return f;
     }
 
@@ -93,15 +94,19 @@ struct Funcd {
                 Doub r = 0.;
                 for(int k = 0; k < 3; ++k)
                     r += (x[i*3+k] - x[j*3+k])*(x[i*3+k] - x[j*3+k]);
-                r = sqrt(r);
+                Doub inv = 1/r;
+                Doub sqr = 1/sqrt(r);
+                Doub inv3 = inv*inv*inv;
+
 
                 // Calculate force and add to deriv
-                Doub force = -24*( 2*pow(1./r, 13) - pow(1./r, 7) );
+                Doub force = -24*sqr*inv3*( 2*inv3   - 1 );
                 for(int k = 0; k < 3; ++k){
                     deriv[i*3+k] += force*(x[i*3+k] - x[j*3+k]);
                     deriv[j*3+k] += force*(x[j*3+k] - x[i*3+k]);
                 }
             }
         }
+        nb_of_calls_der ++; 
     }
 };
